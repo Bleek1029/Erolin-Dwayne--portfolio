@@ -1,0 +1,48 @@
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.project-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 10px 25px;
+  border-color: var(--accent);
+}
+
+.project-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+
+.project-content {
+  padding: 20px;
+}
+
+.project-title {
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+.project-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+@media (max-width: 480px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}
