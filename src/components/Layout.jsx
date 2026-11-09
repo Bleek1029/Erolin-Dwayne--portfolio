@@ -210,8 +210,8 @@ export default function Layout() {
         </motion.nav>
       </header>
 
-      {/* Page Transition Wipe */}
-      <AnimatePresence mode="wait">
+      {/* Page Transition Wipe - Disabled for debugging */}
+      {/* <AnimatePresence mode="wait">
         <motion.div
           key={`wipe-${pathname}`}
           className="wipe"
@@ -227,14 +227,13 @@ export default function Layout() {
             pointerEvents: 'none',
           }}
         />
-      </AnimatePresence>
+      </AnimatePresence> */}
 
       {/* Main Content */}
       <motion.main
         key={pathname}
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 1, y: 0 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.25, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
         style={{ position: 'relative', zIndex: 10, minHeight: '100vh' }}
       >
         <Outlet />

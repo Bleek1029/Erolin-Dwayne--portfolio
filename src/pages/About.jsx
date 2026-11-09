@@ -79,7 +79,7 @@ export default function About() {
       <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto', padding: '0 var(--space-6)' }}>
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 1, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
@@ -90,7 +90,7 @@ export default function About() {
 
           <motion.h1
             className="display-sm"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(2rem, 6vw, 3.5rem)', lineHeight: 1, letterSpacing: '-0.03em', textTransform: 'uppercase', maxWidth: '28ch' }}
@@ -102,7 +102,7 @@ export default function About() {
         {/* About Grid */}
         <motion.div
           className="about-grid"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 1, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{
@@ -155,7 +155,7 @@ export default function About() {
           <div className="about-text" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
             <div className="card card-hover" style={{ padding: 'var(--space-6)' }}>
               <motion.p
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 1, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
                 style={{ fontFamily: 'var(--font-ui)', fontSize: '1.125rem', lineHeight: 1.7, color: 'var(--fg-muted)', marginBottom: 'var(--space-4)' }}
@@ -163,7 +163,7 @@ export default function About() {
                 I'm a full-stack developer with expertise in creating modern web applications. My journey in tech started years ago, and since then I've been constantly learning and evolving to stay at the cutting edge of technology.
               </motion.p>
               <motion.p
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 1, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
                 style={{ fontFamily: 'var(--font-ui)', fontSize: '1.125rem', lineHeight: 1.7, color: 'var(--fg-muted)' }}
@@ -198,7 +198,7 @@ export default function About() {
 
         {/* Skills Section */}
         <motion.section
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 1, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{ marginTop: 'var(--space-16)' }}

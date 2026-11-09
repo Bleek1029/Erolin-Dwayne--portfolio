@@ -36,7 +36,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="page hero" style={{ paddingTop: '120px', paddingBottom: 'var(--space-20)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className="page hero" style={{ paddingTop: '120px', paddingBottom: 'var(--space-20)', minHeight: '100vh', display: 'flex', flexDirection: 'column', opacity: 1, visibility: 'visible' }}>
       {/* Hero Grid */}
       <div className="hero-grid" style={{
         display: 'grid',
@@ -57,7 +57,7 @@ export default function Home() {
 
           <motion.h1
             className="display"
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 1, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
             style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(3rem, 10vw, 7rem)', lineHeight: 0.95, letterSpacing: '-0.04em', textTransform: 'uppercase' }}
@@ -67,7 +67,7 @@ export default function Home() {
 
           <motion.p
             className="typed"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             style={{
@@ -88,7 +88,7 @@ export default function Home() {
 
           <motion.p
             className="lead"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             style={{
@@ -105,7 +105,7 @@ export default function Home() {
 
           <motion.div
             className="cta"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}
@@ -124,7 +124,7 @@ export default function Home() {
         {/* Portrait Card */}
         <motion.figure
           className="portrait card"
-          initial={{ opacity: 0, x: 40 }}
+          initial={{ opacity: 1, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
           onMouseMove={onMove}
@@ -222,7 +222,7 @@ export default function Home() {
       {/* Stats Bento Grid */}
       <motion.div
         className="bento"
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 1, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         style={{
