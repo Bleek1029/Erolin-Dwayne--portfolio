@@ -47,8 +47,8 @@ export default function MatrixRain({ density = 0.3, speed = 1, color = '#d71921'
     };
 
     const draw = (time) => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-      ctx.fillRect(0, 0, width, height);
+      // Clear with transparent - let page background show through
+      ctx.clearRect(0, 0, width, height);
 
       ctx.font = `${FONT_SIZE}px 'Doto', monospace`;
       ctx.textBaseline = 'top';
@@ -62,16 +62,16 @@ export default function MatrixRain({ density = 0.3, speed = 1, color = '#d71921'
           if (y > height) return;
 
           const progress = j / col.length;
-          const alpha = (1 - progress) * col.opacity * 0.6;
+          const alpha = (1 - progress) * col.opacity * 0.8;
 
           // Head character - bright accent
           if (j === 0) {
             ctx.fillStyle = color;
-            ctx.globalAlpha = Math.min(alpha * 2, 1);
+            ctx.globalAlpha = Math.min(alpha * 2.5, 1);
           } else {
-            // Trail - dimmed
+            // Trail - white with subtle glow
             ctx.fillStyle = '#ffffff';
-            ctx.globalAlpha = alpha * 0.3;
+            ctx.globalAlpha = alpha * 0.4;
           }
 
           ctx.fillText(char, x, y);
@@ -114,9 +114,8 @@ export default function MatrixRain({ density = 0.3, speed = 1, color = '#d71921'
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: -1,
+        zIndex: 0,
         pointerEvents: 'none',
-        opacity: 0.4,
       }}
     />
   );
