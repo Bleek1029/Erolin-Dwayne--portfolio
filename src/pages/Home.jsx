@@ -1,27 +1,16 @@
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
-import TypedLine from '../components/TypedLine';
-import Count from '../components/Count';
-import GlyphStrip from '../components/GlyphStrip';
+import { useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import gsap from 'gsap';
+import { Button, GlyphStrip, TypedLine, Count, Card } from '../components/ui';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const roles = ['FULL-STACK DEVELOPER', 'BACKEND ARCHITECT', 'SYSTEM BUILDER', 'FAST LEARNER'];
 
 export default function Home() {
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const rx = useSpring(useTransform(my, [-0.5, 0.5], [6, -6]), { stiffness: 120, damping: 16 });
-  const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-8, 8]), { stiffness: 120, damping: 16 });
-
-  const onMove = (e) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    mx.set((e.clientX - r.left) / r.width - 0.5);
-    my.set((e.clientY - r.top) / r.height - 0.5);
-  };
+  const portraitRef = useRef(null);
 
   // Animate stats on scroll
   useEffect(() => {
@@ -36,8 +25,34 @@ export default function Home() {
     return () => ctx.revert();
   }, []);
 
+  // 3D tilt effect for portrait
+  useEffect(() => {
+    const portrait = portraitRef.current;
+    if (!portrait) return;
+
+    const handleMove = (e) => {
+      const r = portrait.getBoundingClientRect();
+      const mx = (e.clientX - r.left) / r.width - 0.5;
+      const my = (e.clientY - r.top) / r.height - 0.5;
+      const rx = my * -6;
+      const ry = mx * 8;
+      portrait.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    };
+
+    const handleLeave = () => {
+      portrait.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+    };
+
+    portrait.addEventListener('mousemove', handleMove);
+    portrait.addEventListener('mouseleave', handleLeave);
+    return () => {
+      portrait.removeEventListener('mousemove', handleMove);
+      portrait.removeEventListener('mouseleave', handleLeave);
+    };
+  }, []);
+
   return (
-    <div className="page hero" style={{ paddingTop: '120px', paddingBottom: 'var(--space-20)', minHeight: '100vh', display: 'flex', flexDirection: 'column', opacity: 1, visibility: 'visible' }}>
+    <div className="page hero" style={{ paddingTop: '120px', paddingBottom: 'var(--space-20)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Hero Grid */}
       <div className="hero-grid" style={{
         display: 'grid',
@@ -53,15 +68,14 @@ export default function Home() {
           {/* Boot Sequence Indicator */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
             <GlyphStrip active pattern="pulse" speed={1.5} style={{ width: '120px', height: '4px' }} />
-            <span className="label" style={{ color: 'var(--accent)' }}>BOOT SEQUENCE INITIATED</span>
+            <span className="label" style={{ color: 'var(--color-accent)' }}>BOOT SEQUENCE INITIATED</span>
           </div>
 
           <motion.h1
-            className="display"
+            className="display-hero"
             initial={{ opacity: 1, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-            style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(3rem, 10vw, 7rem)', lineHeight: 0.95, letterSpacing: '-0.04em', textTransform: 'uppercase' }}
           >
             Erolin Prince Dwayne
           </motion.h1>
@@ -76,30 +90,23 @@ export default function Home() {
               fontWeight: 500,
               fontSize: 'clamp(1.25rem, 3vw, 2rem)',
               lineHeight: 1.2,
-              color: 'var(--accent)',
+              color: 'var(--color-accent)',
               marginTop: 'var(--space-4)',
               marginBottom: 'var(--space-6)',
               minHeight: '2.5rem',
               textTransform: 'uppercase',
-              letterSpacing: '-0.02em',
+              letterSpacing: 'var(--tracking-tight)',
             }}
           >
             I'm a <TypedLine strings={roles} />
           </motion.p>
 
           <motion.p
-            className="lead"
+            className="body-lg"
             initial={{ opacity: 1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            style={{
-              fontFamily: 'var(--font-ui)',
-              fontSize: '1.125rem',
-              lineHeight: 1.7,
-              color: 'var(--fg-muted)',
-              maxWidth: '38rem',
-              marginBottom: 'var(--space-8)',
-            }}
+            style={{ maxWidth: '38rem', marginBottom: 'var(--space-8)' }}
           >
             I build digital experiences that blend creativity with technology: sleek, performant, user-centric applications from the database to the interface.
           </motion.p>
@@ -111,42 +118,43 @@ export default function Home() {
             transition={{ delay: 0.3, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}
           >
-            <Link to="/projects" className="btn btn-primary">
-              View Work
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </Link>
-            <Link to="/contact" className="btn btn-ghost">Get in Touch</Link>
+            <Button asChild variant="primary" size="lg">
+              <Link to="/projects">View Work
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" size="lg">
+              <Link to="/contact">Get in Touch</Link>
+            </Button>
           </motion.div>
         </div>
 
         {/* Portrait Card */}
         <motion.figure
-          className="portrait card"
+          ref={portraitRef}
+          className="card"
           initial={{ opacity: 1, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-          onMouseMove={onMove}
-          onMouseLeave={() => { mx.set(0); my.set(0); }}
           style={{
-            rotateX: rx,
-            rotateY: ry,
-            transformPerspective: 1000,
             aspectRatio: '4/5',
             margin: 0,
             overflow: 'hidden',
-            background: 'var(--bg-elevated)',
+            background: 'var(--color-card)',
             position: 'relative',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-lg)',
+            transformPerspective: 1000,
+            transformStyle: 'preserve-3d',
           }}
         >
           <div className="portrait-bg" style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg) 100%)',
+            background: 'linear-gradient(135deg, var(--color-card) 0%, var(--color-background) 100%)',
             zIndex: 0,
           }}>
             {/* Glyph accent line */}
@@ -156,29 +164,35 @@ export default function Home() {
               left: 0,
               right: 0,
               height: '3px',
-              background: 'linear-gradient(90deg, transparent, var(--accent), transparent)',
+              background: 'linear-gradient(90deg, transparent, var(--color-accent), transparent)',
               opacity: 0.6,
             }} />
           </div>
           <div className="portrait-content" style={{ position: 'relative', zIndex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{
-              width: '80%',
-              height: '80%',
-              background: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
               position: 'relative',
               overflow: 'hidden',
             }}>
-              <svg width="120" height="120" viewBox="0 0 120 120" fill="none" style={{ opacity: 0.15 }}>
-                <circle cx="60" cy="60" r="50" stroke="var(--accent)" strokeWidth="2" />
-                <circle cx="60" cy="60" r="35" stroke="var(--fg-muted)" strokeWidth="1" strokeDasharray="4 4" />
-                <polygon points="60,25 70,55 100,55 75,75 85,105 60,85 35,105 45,75 20,55 50,55" fill="var(--accent)" opacity="0.3" />
-              </svg>
-              <span className="label" style={{ position: 'absolute', bottom: 'var(--space-4)', color: 'var(--fg-subtle)' }}>PORTRAIT.MODULE</span>
+              <img
+                src="/images/me.2.jpeg"
+                alt="Erolin Prince Dwayne"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center top',
+                }}
+                loading="eager"
+              />
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.3) 100%)',
+                pointerEvents: 'none',
+              }} />
+              <span className="label" style={{ position: 'absolute', bottom: 'var(--space-4)', left: 'var(--space-4)', color: 'var(--color-muted-foreground)', zIndex: 1 }}>PORTRAIT.MODULE</span>
             </div>
           </div>
 
@@ -195,23 +209,23 @@ export default function Home() {
               alignItems: 'center',
               gap: 'var(--space-2)',
               fontFamily: 'var(--font-ui)',
-              fontSize: '0.75rem',
+              fontSize: 'var(--text-xs)',
               fontWeight: 500,
-              letterSpacing: '0.05em',
+              letterSpacing: 'var(--tracking-wide)',
               textTransform: 'uppercase',
               background: 'rgba(10, 10, 10, 0.8)',
               backdropFilter: 'blur(8px)',
-              color: 'var(--fg)',
-              border: '1px solid var(--border)',
+              color: 'var(--color-foreground)',
+              border: '1px solid var(--color-border)',
               padding: 'var(--space-2) var(--space-4)',
               borderRadius: 'var(--radius-full)',
               cursor: 'pointer',
               transition: 'all var(--transition-fast)',
             }}
-            onMouseEnter={(e) => { e.target.style.borderColor = 'var(--accent)'; e.target.style.color = 'var(--accent)'; }}
-            onMouseLeave={(e) => { e.target.style.borderColor = 'var(--border)'; e.target.style.color = 'var(--fg)'; }}
+            onMouseEnter={(e) => { e.target.style.borderColor = 'var(--color-accent)'; e.target.style.color = 'var(--color-accent)'; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = 'var(--color-border)'; e.target.style.color = 'var(--color-foreground)'; }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <polyline points="23 4 23 10 17 10" />
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
             </svg>
@@ -236,24 +250,24 @@ export default function Home() {
           padding: '0 var(--space-6)',
         }}
       >
-        <div className="card card-hover" data-stat style={{ padding: 'var(--space-6)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', background: 'var(--accent)', borderColor: 'var(--accent)', color: '#fff' }}>
-          <motion.b style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1, letterSpacing: '-0.03em' }}>
+        <Card variant="padded" hover data-stat style={{ background: 'var(--color-accent)', borderColor: 'var(--color-accent)', color: 'var(--color-on-accent)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+          <motion.b style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1, letterSpacing: 'var(--tracking-tighter)' }}>
             <Count to={5} />
           </motion.b>
-          <span style={{ fontFamily: 'var(--font-ui)', fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>PROJECTS SHIPPED</span>
-        </div>
-        <div className="card card-hover" data-stat style={{ padding: 'var(--space-6)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-          <motion.b style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1, letterSpacing: '-0.03em' }}>
+          <span style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--text-xs)', color: 'rgba(15,23,42,0.7)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>PROJECTS SHIPPED</span>
+        </Card>
+        <Card variant="padded" hover data-stat style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+          <motion.b style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1, letterSpacing: 'var(--tracking-tighter)' }}>
             <Count to={2} suffix="+" />
           </motion.b>
-          <span style={{ fontFamily: 'var(--font-ui)', fontSize: '0.875rem', color: 'var(--fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>YEARS EXPERIENCE</span>
-        </div>
-        <div className="card card-hover" data-stat style={{ padding: 'var(--space-6)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-          <motion.b style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1, letterSpacing: '-0.03em' }}>
+          <span style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--text-xs)', color: 'var(--color-muted-foreground)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>YEARS EXPERIENCE</span>
+        </Card>
+        <Card variant="padded" hover data-stat style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+          <motion.b style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1, letterSpacing: 'var(--tracking-tighter)' }}>
             <Count to={10} />
           </motion.b>
-          <span style={{ fontFamily: 'var(--font-ui)', fontSize: '0.875rem', color: 'var(--fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>MODULES BUILT</span>
-        </div>
+          <span style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--text-xs)', color: 'var(--color-muted-foreground)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>MODULES BUILT</span>
+        </Card>
       </motion.div>
 
       {/* Bottom Glyph Strip */}

@@ -5,11 +5,11 @@ import { useEffect, useRef } from 'react';
 
 const CHARS = '01◆◇◈▣▢□■▪▫▬▭▮▯▰▱▲△▴▵▶▷▸▹►▻▼▽▾▿◀◁◂◃◄◅◆◇◈';
 const FONT_SIZE = 14;
-const COLUMNS = 80;
+// COLUMNS is unused but kept for reference
+const _COLUMNS = 80;
 
 export default function MatrixRain({ density = 0.3, speed = 1, color = '#d71921' }) {
   const canvasRef = useRef(null);
-  const rafRef = useRef(null);
   const columnsRef = useRef([]);
   const prefersReduced = useRef(false);
 
@@ -18,6 +18,8 @@ export default function MatrixRain({ density = 0.3, speed = 1, color = '#d71921'
     if (prefersReduced.current) return;
 
     const canvas = canvasRef.current;
+    if (!canvas) return;
+
     const ctx = canvas.getContext('2d');
     let width = 0;
     let height = 0;
@@ -46,7 +48,9 @@ export default function MatrixRain({ density = 0.3, speed = 1, color = '#d71921'
       }));
     };
 
-    const draw = (time) => {
+    let animationId = 0;
+
+    const draw = (_time) => {
       // Clear with transparent - let page background show through
       ctx.clearRect(0, 0, width, height);
 
@@ -91,16 +95,16 @@ export default function MatrixRain({ density = 0.3, speed = 1, color = '#d71921'
       });
 
       ctx.globalAlpha = 1;
-      rafRef.current = requestAnimationFrame(draw);
+      animationId = requestAnimationFrame(draw);
     };
 
     resize();
     window.addEventListener('resize', resize);
-    rafRef.current = requestAnimationFrame(draw);
+    animationId = requestAnimationFrame(draw);
 
     return () => {
       window.removeEventListener('resize', resize);
-      cancelAnimationFrame(rafRef.current);
+      cancelAnimationFrame(animationId);
     };
   }, [density, speed, color]);
 

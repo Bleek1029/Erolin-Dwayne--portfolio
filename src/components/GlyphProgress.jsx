@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import gsap from 'gsap';
 
@@ -18,18 +18,19 @@ export default function GlyphProgress({
 }) {
   const canvasRef = useRef(null);
   const progressRef = useRef(0);
-  const [mounted, setMounted] = useState(false);
   const prefersReduced = useRef(false);
+  const mounted = useRef(true);
 
   useEffect(() => {
-    setMounted(true);
     prefersReduced.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }, []);
 
   useEffect(() => {
-    if (!mounted || prefersReduced.current || !trigger) return;
+    if (!mounted.current || prefersReduced.current || !trigger) return;
 
     const canvas = canvasRef.current;
+    if (!canvas) return;
+
     const ctx = canvas.getContext('2d');
     let width = 0;
     let heightPx = 0;
@@ -120,9 +121,9 @@ export default function GlyphProgress({
       st.kill();
       window.removeEventListener('resize', draw);
     };
-  }, [trigger, start, end, scrub, color, height, mounted]);
+  }, [trigger, start, end, scrub, color, height]);
 
-  if (!mounted || prefersReduced.current) return null;
+  if (prefersReduced.current) return null;
 
   return (
     <canvas

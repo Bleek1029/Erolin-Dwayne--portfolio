@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 // Nothing OS Glyph Interface - LED strip animation
 // Simulates the Nothing Phone's glyph lights
@@ -17,20 +17,20 @@ export default function GlyphStrip({
   className = '',
 }) {
   const canvasRef = useRef(null);
-  const rafRef = useRef(null);
   const timeRef = useRef(0);
   const prefersReduced = useRef(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useRef(true);
 
   useEffect(() => {
-    setMounted(true);
     prefersReduced.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }, []);
 
   useEffect(() => {
-    if (!mounted || prefersReduced.current) return;
+    if (!mounted.current || prefersReduced.current) return;
 
     const canvas = canvasRef.current;
+    if (!canvas) return;
+
     const ctx = canvas.getContext('2d');
     let width = 0;
     let height = 0;
@@ -48,8 +48,9 @@ export default function GlyphStrip({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
+    let animationId = 0;
+
     const draw = (now) => {
-      const dt = (now - timeRef.current) / 1000;
       timeRef.current = now;
 
       ctx.clearRect(0, 0, width, height);
@@ -126,21 +127,21 @@ export default function GlyphStrip({
       }
 
       ctx.globalAlpha = 1;
-      rafRef.current = requestAnimationFrame(draw);
+      animationId = requestAnimationFrame(draw);
     };
 
     resize();
     window.addEventListener('resize', resize);
     timeRef.current = performance.now();
-    rafRef.current = requestAnimationFrame(draw);
+    animationId = requestAnimationFrame(draw);
 
     return () => {
       window.removeEventListener('resize', resize);
-      cancelAnimationFrame(rafRef.current);
+      cancelAnimationFrame(animationId);
     };
-  }, [active, pattern, speed, mounted]);
+  }, [active, pattern, speed]);
 
-  if (!mounted || prefersReduced.current) return null;
+  if (prefersReduced.current) return null;
 
   return (
     <canvas

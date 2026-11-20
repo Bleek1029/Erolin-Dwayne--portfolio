@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
-import GlyphStrip from '../components/GlyphStrip';
+import { motion, AnimatePresence } from 'motion/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import gsap from 'gsap';
+import { GlyphStrip, Tag } from '../components/ui';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -44,7 +44,7 @@ export default function Projects() {
 
   return (
     <div className="page" style={{ paddingTop: '120px', paddingBottom: 'var(--space-20)', minHeight: '100vh' }}>
-      <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto', padding: '0 var(--space-6)' }}>
+      <div className="container">
         {/* Header */}
         <motion.div
           initial={{ opacity: 1, y: 30 }}
@@ -53,7 +53,7 @@ export default function Projects() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
             <GlyphStrip active pattern="pulse" speed={1.5} style={{ width: '120px', height: '4px' }} />
-            <span className="label" style={{ color: 'var(--accent)' }}>PROJECT REGISTRY LOADED</span>
+            <span className="label" style={{ color: 'var(--color-accent)' }}>PROJECT REGISTRY LOADED</span>
           </div>
 
           <motion.h1
@@ -61,7 +61,6 @@ export default function Projects() {
             initial={{ opacity: 1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(2rem, 6vw, 3.5rem)', lineHeight: 1, letterSpacing: '-0.03em', textTransform: 'uppercase' }}
           >
             Selected work
           </motion.h1>
@@ -77,8 +76,8 @@ export default function Projects() {
             display: 'inline-flex',
             gap: 'var(--space-2)',
             padding: 'var(--space-2)',
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border)',
+            background: 'var(--color-secondary)',
+            border: '1px solid var(--color-border)',
             borderRadius: 'var(--radius-md)',
             marginBottom: 'var(--space-10)',
             position: 'relative',
@@ -92,7 +91,7 @@ export default function Projects() {
               bottom: 'var(--space-2)',
               left: 'var(--space-2)',
               width: 'calc(100% / 3 - var(--space-4))',
-              background: 'var(--accent)',
+              background: 'var(--color-accent)',
               borderRadius: 'var(--radius-sm)',
               transition: 'transform var(--transition-base), left var(--transition-base)',
               transform: filter === 'all' ? 'translateX(0)' : filter === 'web' ? 'translateX(100%)' : 'translateX(200%)',
@@ -107,15 +106,15 @@ export default function Projects() {
                 position: 'relative',
                 zIndex: 1,
                 fontFamily: 'var(--font-ui)',
-                fontSize: '0.75rem',
+                fontSize: 'var(--text-xs)',
                 fontWeight: 500,
-                letterSpacing: '0.1em',
+                letterSpacing: 'var(--tracking-widest)',
                 textTransform: 'uppercase',
                 padding: 'var(--space-2) var(--space-5)',
                 borderRadius: 'var(--radius-sm)',
                 background: 'none',
                 border: 'none',
-                color: filter === tab.id ? '#fff' : 'var(--fg-muted)',
+                color: filter === tab.id ? 'var(--color-on-accent)' : 'var(--color-muted-foreground)',
                 cursor: 'pointer',
                 transition: 'color var(--transition-fast)',
               }}
@@ -167,7 +166,7 @@ export default function Projects() {
                 }}
               >
                 {/* Project Image */}
-                <div className="proj-img" style={{ aspectRatio: '16/9', overflow: 'hidden', position: 'relative', background: 'var(--bg-elevated)' }}>
+                <div className="proj-img" style={{ aspectRatio: '16/9', overflow: 'hidden', position: 'relative', background: 'var(--color-secondary)' }}>
                   <img
                     src={p.img}
                     alt={p.title}
@@ -196,9 +195,9 @@ export default function Projects() {
                   >
                     <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
                       {p.tags.map((t) => (
-                        <span key={t} className="tag tag-accent" style={{ fontSize: '0.625rem' }}>
+                        <Tag key={t} variant="primary" style={{ fontSize: 'var(--text-xs)' }}>
                           {t}
-                        </span>
+                        </Tag>
                       ))}
                     </div>
                   </motion.div>
@@ -208,18 +207,18 @@ export default function Projects() {
                 <div className="proj-info" style={{ padding: 'var(--space-5)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', flex: 1 }}>
                   <div className="tags" style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
                     {p.tags.map((t) => (
-                      <span key={t} className="tag" style={{ fontSize: '0.625rem' }}>{t}</span>
+                      <Tag key={t} style={{ fontSize: 'var(--text-xs)' }}>{t}</Tag>
                     ))}
                   </div>
-                  <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: '1.125rem', lineHeight: 1.2, letterSpacing: '-0.01em', textTransform: 'uppercase' }}>
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-xl)', lineHeight: 1.2, letterSpacing: 'var(--tracking-tight)', textTransform: 'uppercase' }}>
                     {p.title}
                   </h3>
-                  <p style={{ fontFamily: 'var(--font-ui)', fontSize: '0.875rem', lineHeight: 1.6, color: 'var(--fg-muted)' }}>
+                  <p className="body-sm">
                     {p.desc}
                   </p>
-                  <div style={{ marginTop: 'auto', paddingTop: 'var(--space-3)', borderTop: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span className="label" style={{ color: 'var(--accent)' }}>{p.filter === 'web' ? 'WEB.MODULE' : 'DESIGN.MODULE'}</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--fg-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'stroke var(--transition-fast), transform var(--transition-fast)' }}>
+                  <div style={{ marginTop: 'auto', paddingTop: 'var(--space-3)', borderTop: '1px solid var(--color-hairline)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span className="label" style={{ color: 'var(--color-accent)' }}>{p.filter === 'web' ? 'WEB.MODULE' : 'DESIGN.MODULE'}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted-foreground)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'stroke var(--transition-fast), transform var(--transition-fast)' }} aria-hidden="true">
                       <line x1="5" y1="12" x2="19" y2="12" />
                       <polyline points="12 5 19 12 12 19" />
                     </svg>
@@ -243,10 +242,10 @@ export default function Projects() {
               justifyContent: 'center',
               padding: 'var(--space-20)',
               textAlign: 'center',
-              color: 'var(--fg-muted)',
+              color: 'var(--color-muted-foreground)',
             }}
           >
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: 'var(--space-4)', opacity: 0.3 }}>
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: 'var(--space-4)', opacity: 0.3 }} aria-hidden="true">
               <rect x="2" y="3" width="20" height="14" rx="2" />
               <path d="M8 21h8" />
               <path d="M12 17v4" />
