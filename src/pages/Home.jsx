@@ -20,10 +20,13 @@ export default function Home() {
       // Manila is UTC+8 - calculate manually for reliability
       const utc = now.getTime() + now.getTimezoneOffset() * 60000;
       const manila = new Date(utc + 8 * 3600000);
-      const hours = String(manila.getHours()).padStart(2, '0');
+      const hours = manila.getHours();
       const minutes = String(manila.getMinutes()).padStart(2, '0');
       const seconds = String(manila.getSeconds()).padStart(2, '0');
-      setTime(`${hours}:${minutes}:${seconds}`);
+      // 12-hour format with AM/PM
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const displayHours = String(hours % 12 || 12).padStart(2, '0');
+      setTime(`${displayHours}:${minutes}:${seconds} ${period}`);
     };
     updateTime();
     // Update every second for live clock feel
