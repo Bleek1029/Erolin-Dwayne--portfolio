@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Outlet, Link, useLocation, useNavigation } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { LoadingOverlay } from './ui';
 
@@ -14,7 +14,6 @@ const CURRENT_YEAR = 2025;
 
 export default function Layout() {
   const { pathname } = useLocation();
-  const navigation = useNavigation();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [theme, setTheme] = useState(() => {
@@ -24,8 +23,8 @@ export default function Layout() {
     }
     return 'light';
   });
-
-  const isLoading = navigation.state === 'loading';
+  const [isLoading, setIsLoading] = useState(false);
+  const prevPathnameRef = useRef(pathname);
 
   // Scroll listener for nav background
   useEffect(() => {
@@ -35,6 +34,16 @@ export default function Layout() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Track route changes for loading animation
+  useEffect(() => {
+    if (prevPathnameRef.current !== pathname) {
+      setIsLoading(true);
+      const timer = setTimeout(() => setIsLoading(false), 400);
+      prevPathnameRef.current = pathname;
+      return () => clearTimeout(timer);
+    }
+  }, [pathname]);
 
   // Reset scroll on route change
   useEffect(() => {
