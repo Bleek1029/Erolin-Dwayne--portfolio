@@ -13,13 +13,17 @@ export default function Home() {
   const [time, setTime] = useState('');
   const heroNameRef = useRef(null);
 
-  // Live clock
+  // Live clock - Manila Time (UTC+8)
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      setTime(`${hours}:${minutes}`);
+      const manilaTime = now.toLocaleTimeString('en-PH', {
+        timeZone: 'Asia/Manila',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      setTime(manilaTime);
     };
     updateTime();
     const interval = setInterval(updateTime, 15000);
