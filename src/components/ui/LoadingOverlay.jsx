@@ -2,17 +2,27 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import GlyphStrip from './GlyphStrip';
 
-export default function LoadingOverlay({ isLoading, message = 'LOADING...' }) {
-  const [show, setShow] = useState(false);
+export default function LoadingOverlay({ isLoading, message = 'LOADING...', showOnMount = true }) {
+  const [show, setShow] = useState(showOnMount);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    if (showOnMount) {
+      const timer = setTimeout(() => setShow(false), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [showOnMount]);
+
+  useEffect(() => {
+    if (!mounted) return;
     if (isLoading) {
       setShow(true);
     } else {
       const timer = setTimeout(() => setShow(false), 300);
       return () => clearTimeout(timer);
     }
-  }, [isLoading]);
+  }, [isLoading, mounted]);
 
   if (!show) return null;
 

@@ -59,7 +59,7 @@ export default function Layout() {
 
   return (
     <>
-      <LoadingOverlay isLoading={isLoading} message="NAVIGATING..." />
+      <LoadingOverlay isLoading={isLoading} message="NAVIGATING..." showOnMount={true} />
       {/* Navigation */}
       <header
         className={`nav ${scrolled ? 'scrolled' : ''}`}
