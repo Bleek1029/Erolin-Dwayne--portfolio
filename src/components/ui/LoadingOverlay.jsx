@@ -77,7 +77,9 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
     canvas.height = S * r;
     ctx.setTransform(r, 0, 0, r, 0, 0);
 
-    const ph = timeSeconds % CYCLE;
+    // Cap at RUN + 0.6 so animation completes and stays at 100%
+    const cappedTime = Math.min(timeSeconds, RUN + 0.6);
+    const ph = cappedTime % CYCLE;
     const p = Math.min(1, ph / RUN);
     const e = 1 - Math.pow(1 - p, 3);
     const R = e * MAXR;
