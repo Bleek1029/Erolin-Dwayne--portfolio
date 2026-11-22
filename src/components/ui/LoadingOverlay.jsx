@@ -24,8 +24,8 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
     if (showOnMount) {
       startTimeRef.current = performance.now();
       animate();
-      // Wait for RUN duration + extra time to ensure 100% is reached and visible
-      const timer = setTimeout(() => setShow(false), RUN * 1000 + 1000);
+      // Wait for RUN duration + buffer to guarantee 100%
+      const timer = setTimeout(() => setShow(false), RUN * 1000 + 500);
       return () => clearTimeout(timer);
     }
   }, [showOnMount]);
@@ -37,8 +37,8 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
       startTimeRef.current = performance.now();
       animate();
     } else {
-      // Give extra time for counter to reach 100%
-      const timer = setTimeout(() => setShow(false), 1000);
+      // Wait for full RUN duration + buffer to guarantee 100%
+      const timer = setTimeout(() => setShow(false), RUN * 1000 + 200);
       return () => clearTimeout(timer);
     }
   }, [isLoading, mounted]);
