@@ -10,11 +10,11 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
   const percentRef = useRef(0);
   const reduceMotionRef = useRef(false);
 
-  // Constants matching the original EXACTLY
+  // Constants matching the original EXACTLY (but RUN=4s for 4-second animation)
   const N = 21; // grid size
   const C = 10; // center index
   const CYCLE = 4; // cycle duration in seconds
-  const RUN = 2.9; // run duration in seconds (expansion phase) - EXACT from original
+  const RUN = 4; // run duration in seconds - 4 second expansion
   const MAXR = Math.hypot(C, C) + 1; // EXACT from original
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
     if (showOnMount) {
       startTimeRef.current = performance.now();
       animate();
-      const timer = setTimeout(() => setShow(false), RUN * 1000);
+      const timer = setTimeout(() => setShow(false), RUN * 1000 + 100);
       return () => clearTimeout(timer);
     }
   }, [showOnMount]);
