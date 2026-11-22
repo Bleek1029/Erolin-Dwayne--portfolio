@@ -1,15 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import GlyphStrip from './GlyphStrip';
 
-export default function LoadingOverlay({ isLoading, message = 'LOADING...', showOnMount = true }) {
+export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnMount = true }) {
   const [show, setShow] = useState(showOnMount);
   const [mounted, setMounted] = useState(false);
+  const canvasRef = useRef(null);
+  const animationRef = useRef(null);
+  const startTimeRef = useRef(0);
+  const percentRef = useRef(0);
+  const reduceMotionRef = useRef(false);
+
+  // Constants matching the original
+  const N = 21; // grid size
+  const C = 10; // center index
+  const CYCLE = 4; // cycle duration in seconds
+  const RUN = 2.9; // run duration in seconds
 
   useEffect(() => {
     setMounted(true);
+    reduceMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     if (showOnMount) {
-      const timer = setTimeout(() => setShow(false), 800);
+      startTimeRef.current = performance.now();
+      animate();
+      const timer = setTimeout(() => setShow(false), 1000);
       return () => clearTimeout(timer);
     }
   }, [showOnMount]);
@@ -18,11 +32,122 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING...', show
     if (!mounted) return;
     if (isLoading) {
       setShow(true);
+      startTimeRef.current = performance.now();
+      animate();
     } else {
       const timer = setTimeout(() => setShow(false), 300);
       return () => clearTimeout(timer);
     }
   }, [isLoading, mounted]);
+
+  // Theme change listener
+  useEffect(() => {
+    const handleThemeChange = () => {
+      // Force redraw on theme change
+      if (canvasRef.current) {
+        draw();
+      }
+    };
+    const observer = new MutationObserver(handleThemeChange);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, [mounted]);
+
+  const getColors = () => {
+    const style = getComputedStyle(document.documentElement);
+    return {
+      ink: style.getPropertyValue('--ink').trim() || '#0c0c0c',
+      line: style.getPropertyValue('--line').trim() || 'rgba(0,0,0,.18)',
+      red: '#d71921',
+    };
+  };
+
+  const draw = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const { ink, line, red } = getColors();
+    const r = window.devicePixelRatio || 1;
+    const S = canvas.clientWidth;
+    canvas.width = S * r;
+    canvas.height = S * r;
+    ctx.setTransform(r, 0, 0, r, 0, 0);
+
+    const now = performance.now();
+    const ph = (now - startTimeRef.current) / 1000 % CYCLE;
+    const p = Math.min(1, ph / RUN);
+    const e = 1 - Math.pow(1 - p, 3);
+    const MAXR = Math.hypot(C, C) + 1;
+    const R = e * MAXR;
+    const cell = S / N;
+
+    percentRef.current = Math.floor(e * 100);
+
+    ctx.clearRect(0, 0, S, S);
+
+    for (let j = 0; j < N; j++) {
+      for (let i = 0; i < N; i++) {
+        const d = Math.hypot(i - C, j - C);
+        const px = (i + 0.5) * cell;
+        const py = (j + 0.5) * cell;
+        let r = cell * 0.17;
+        let fill = line;
+
+        if (d <= R) {
+          const edge = R - d;
+          if (edge < 1.3 && p < 1) {
+            fill = red;
+            r = cell * (0.42 - edge * 0.12);
+          } else {
+            fill = ink;
+            r = cell * 0.34;
+          }
+        } else if (!reduceMotionRef.current) {
+          const w = Math.sin(d * 0.9 - ph * 5);
+          if (w > 0.88) {
+            fill = 'rgba(215, 25, 33, 0.55)';
+            r = cell * 0.25;
+          }
+        }
+        if (p >= 1 && ph > RUN + 0.6) {
+          fill = red;
+          r = cell * 0.34;
+        }
+
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, 2 * Math.PI);
+        ctx.fillStyle = fill;
+        ctx.fill();
+      }
+    }
+  };
+
+  const animate = () => {
+    draw();
+    if (show) {
+      animationRef.current = requestAnimationFrame(animate);
+    }
+  };
+
+  const handleResize = () => {
+    if (canvasRef.current) {
+      draw();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
 
   if (!show) return null;
 
@@ -32,7 +157,7 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING...', show
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+        transition={{ duration: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
         style={{
           position: 'fixed',
           inset: 0,
@@ -42,99 +167,136 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING...', show
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 'var(--space-6)',
+          gap: '24px',
+          padding: '20px',
+          fontFamily: '"Space Mono", ui-monospace, monospace',
         }}
         role="status"
         aria-live="polite"
         aria-label={message}
       >
-        {/* Nothing OS Dot Matrix Loader */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-4)' }}>
-          {/* Central glowing dot */}
-          <motion.div
+        {/* Canvas loader - matches Nothing style */}
+        <canvas
+          ref={canvasRef}
+          id="nothing-loader"
+          role="img"
+          aria-label="Dots filling from the center outward as loading progresses"
+          style={{
+            width: 'min(78vw, 400px)',
+            aspectRatio: '1',
+            display: 'block',
+          }}
+        />
+
+        {/* Percentage counter */}
+        <motion.div
+          className="num"
+          style={{
+            fontFamily: 'Doto, "Courier New", monospace',
+            fontWeight: 900,
+            fontSize: 'clamp(4.5rem, 18vw, 7.5rem)',
+            lineHeight: 0.85,
+            color: 'var(--ink)',
+          }}
+        >
+          {String(percentRef.current).padStart(3, '0')}
+        </motion.div>
+
+        {/* Loading label with blinking dot */}
+        <motion.p
+          className="lab"
+          style={{
+            fontSize: '0.8rem',
+            color: 'var(--mute)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '9px',
+          }}
+        >
+          <motion.i
             style={{
-              width: '12px',
-              height: '12px',
+              width: '9px',
+              height: '9px',
               borderRadius: '50%',
               background: 'var(--red)',
-              boxShadow: '0 0 20px var(--red), 0 0 40px var(--red)',
             }}
-            animate={{ scale: [1, 1.5, 1], boxShadow: ['0 0 20px var(--red)', '0 0 40px var(--red), 0 0 60px var(--red)', '0 0 20px var(--red)'] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            animate={{ opacity: [1, 0.2, 1] }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'steps(1)' }}
             aria-hidden="true"
           />
+          {message}
+        </motion.p>
 
-          {/* Glyph strips - horizontal */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', alignItems: 'center' }}>
-            <GlyphStrip active pattern="scan" speed={2} count={12} style={{ width: '120px', height: '3px', color: 'var(--red)' }} />
-            <GlyphStrip active pattern="wave" speed={1.5} count={12} style={{ width: '100px', height: '3px', color: 'var(--mute)', opacity: 0.5 }} />
-            <GlyphStrip active pattern="pulse" speed={1} count={12} style={{ width: '80px', height: '3px', color: 'var(--mute)', opacity: 0.3 }} />
-          </div>
-
-          {/* Loading message */}
-          <motion.p
-            className="mono"
-            style={{ fontSize: 'var(--text-xs)', letterSpacing: 'var(--tracking-widest)', color: 'var(--mute)' }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+        {/* Theme and replay buttons - top right */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(16px + env(safe-area-inset-top, 0px))',
+            right: '16px',
+            display: 'flex',
+            gap: '8px',
+            zIndex: 10000,
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              startTimeRef.current = performance.now();
+              if (reduceMotionRef.current) draw();
+            }}
+            style={{
+              fontFamily: '"Space Mono", ui-monospace, monospace',
+              fontSize: '0.78rem',
+              padding: '8px 14px',
+              borderRadius: '99px',
+              border: '1px solid var(--line)',
+              background: 'transparent',
+              color: 'var(--ink)',
+              cursor: 'pointer',
+              transition: 'background 0.25s, color 0.25s',
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'var(--ink)';
+              e.target.style.color = 'var(--bg)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'transparent';
+              e.target.style.color = 'var(--ink)';
+            }}
           >
-            {message}
-          </motion.p>
-
-          {/* Progress dots - Nothing OS style */}
-          <motion.div
-            className="flex gap-1"
-            style={{ marginTop: 'var(--space-2)' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.4 }}
-            aria-hidden="true"
+            Replay
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const dark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+                (!document.documentElement.getAttribute('data-theme') &&
+                  window.matchMedia('(prefers-color-scheme: dark)').matches);
+              document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+            }}
+            aria-label="Switch light and dark theme"
+            style={{
+              fontFamily: '"Space Mono", ui-monospace, monospace',
+              fontSize: '0.78rem',
+              padding: '8px 14px',
+              borderRadius: '99px',
+              border: '1px solid var(--line)',
+              background: 'transparent',
+              color: 'var(--ink)',
+              cursor: 'pointer',
+              transition: 'background 0.25s, color 0.25s',
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'var(--ink)';
+              e.target.style.color = 'var(--bg)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'transparent';
+              e.target.style.color = 'var(--ink)';
+            }}
           >
-            {Array.from({ length: 5 }, (_, i) => (
-              <motion.div
-                key={i}
-                style={{
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  background: i === 0 ? 'var(--red)' : 'var(--line)',
-                  transition: 'background 0.3s ease',
-                }}
-                animate={{
-                  background: ['var(--line)', 'var(--red)', 'var(--line)'],
-                }}
-                transition={{
-                  duration: 2,
-                  delay: i * 0.15,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-              />
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Corner dots - Nothing OS branding */}
-        <div style={{ position: 'absolute', top: 'var(--space-6)', left: 'var(--space-6)', display: 'flex', gap: 'var(--space-2)' }}>
-          {Array.from({ length: 3 }, (_, i) => (
-            <motion.div
-              key={i}
-              style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--red)', opacity: 0.6 }}
-              animate={{ opacity: [0.3, 1, 0.3] }}
-              transition={{ duration: 1, delay: i * 0.2, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          ))}
-        </div>
-        <div style={{ position: 'absolute', bottom: 'var(--space-6)', right: 'var(--space-6)', display: 'flex', gap: 'var(--space-2)' }}>
-          {Array.from({ length: 3 }, (_, i) => (
-            <motion.div
-              key={i}
-              style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--red)', opacity: 0.6 }}
-              animate={{ opacity: [0.3, 1, 0.3] }}
-              transition={{ duration: 1, delay: i * 0.2 + 0.5, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          ))}
+            Theme
+          </button>
         </div>
       </motion.div>
     </AnimatePresence>
