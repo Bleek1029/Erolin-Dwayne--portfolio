@@ -32,16 +32,16 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
 
   useEffect(() => {
     if (!mounted) return;
-    if (isLoading) {
+    // Only show on initial mount (showOnMount), not on route transitions
+    if (isLoading && showOnMount) {
       setShow(true);
       startTimeRef.current = performance.now();
       animate();
-    } else {
-      // Wait for full RUN duration + buffer to guarantee 100%
-      const timer = setTimeout(() => setShow(false), RUN * 1000 + 200);
+    } else if (!isLoading) {
+      const timer = setTimeout(() => setShow(false), RUN * 1000 + 500);
       return () => clearTimeout(timer);
     }
-  }, [isLoading, mounted]);
+  }, [isLoading, mounted, showOnMount]);
 
   // Theme change listener
   useEffect(() => {
