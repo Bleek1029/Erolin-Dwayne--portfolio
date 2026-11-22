@@ -153,7 +153,7 @@ export default function Contact() {
           style={{ marginTop: 'var(--space-8)', gap: '14px', alignItems: 'start' }}
         >
           {/* Contact Info - s3 */}
-          <div className="card s3" style={{ display: 'grid', gap: 'var(--space-4)' }}>
+          <div className="card s3" style={{ display: 'grid', gap: 'var(--space-4)', minHeight: 'auto' }}>
             {info.map((item) => (
               <a
                 key={item.label}
@@ -233,7 +233,7 @@ export default function Contact() {
           {/* Contact Form & Red Card - s3 */}
           <div className="s3" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {/* Red Contact Card */}
-            <div className="card-contact" style={{ minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px' }}>
+            <div className="card-contact" style={{ minHeight: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px' }}>
               <div className="dot">Let's<br />build it.</div>
               <div style={{ marginTop: '22px' }}>
                 <p style={{ opacity: .85 }}>Looking for a team that cares about people who actually use the product.</p>
@@ -243,7 +243,7 @@ export default function Contact() {
 
             {/* Form Card */}
             <form ref={formRef} className="card" data-contact onSubmit={submit} style={{ padding: '24px', display: 'grid', gap: 'var(--space-4)' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+              <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
                 <Input
                   label="NAME"
                   id="name"

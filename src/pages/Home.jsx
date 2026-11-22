@@ -142,8 +142,9 @@ export default function Home() {
           margin: 'var(--space-12) auto 0',
           padding: '0 20px',
         }}
+        role="list"
       >
-        <Card className="card rise s3" data-stat style={{ background: 'var(--surface)', border: 'none' }}>
+        <Card className="card rise s3" data-stat style={{ background: 'var(--surface)', border: 'none' }} role="listitem">
           <div>
             <p className="mono" style={{ color: 'var(--mute)' }}>Local time</p>
             <div className="clock" style={{ position: 'relative', marginTop: 'var(--space-4)' }}>
@@ -153,7 +154,7 @@ export default function Home() {
           </div>
         </Card>
 
-        <Card className="card rise s3" data-stat style={{ background: 'var(--surface)', border: 'none' }}>
+        <Card className="card rise s3" data-stat style={{ background: 'var(--surface)', border: 'none' }} role="listitem">
           <div>
             <h2 className="h1">About</h2>
             <p style={{ marginTop: '10px', color: 'var(--mute)' }}>BSIT student who likes interfaces with one clear job. I research the problem first, sketch second, and build last.</p>
@@ -166,7 +167,7 @@ export default function Home() {
           </div>
         </Card>
 
-        <Card className="card-case rise s6" id="besttrack" data-stat style={{ minHeight: '360px' }}>
+        <Card className="card-case rise s6" id="besttrack" data-stat style={{ minHeight: 'auto', padding: 'var(--space-6)' }} role="listitem">
           <div>
             <p className="mono" style={{ color: 'inherit', opacity: .6 }}>Case study · Research and concept</p>
             <h2 className="big" style={{ marginTop: '14px' }}>Best<br />Track</h2>
@@ -193,14 +194,14 @@ export default function Home() {
           </div>
         </Card>
 
-        <Card className="card rise s6" data-stat style={{ background: 'var(--surface)', border: 'none' }}>
+        <Card className="card rise s6" data-stat style={{ background: 'var(--surface)', border: 'none' }} role="listitem">
           <h2 className="h1">Selected work</h2>
           <ul className="list">
             <li><b>Best Track</b><span className="mono">Thesis · 2026</span></li>
           </ul>
         </Card>
 
-        <Card className="card-contact rise s6" id="contact" data-stat>
+        <Card className="card-contact rise s6" id="contact" data-stat role="listitem">
           <div className="dot">Let's<br />build it.</div>
           <div style={{ marginTop: '22px' }}>
             <p>Looking for a team that cares about people who actually use the product.</p>

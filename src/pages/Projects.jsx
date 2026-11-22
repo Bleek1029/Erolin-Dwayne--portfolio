@@ -61,6 +61,7 @@ function Lightbox({ isOpen, onClose, src, alt }) {
           }}
         />
         <button
+          className="lightbox-close"
           onClick={(e) => { e.stopPropagation(); onClose(); }}
           style={{
             position: 'absolute',
@@ -178,7 +179,8 @@ export default function Projects() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{
-            display: 'inline-flex',
+            display: 'flex',
+            flexWrap: 'wrap',
             gap: 'var(--space-1)',
             padding: 'var(--space-1)',
             background: 'var(--surface)',
@@ -188,9 +190,10 @@ export default function Projects() {
             position: 'relative',
           }}
         >
-          {/* Active indicator */}
+          {/* Active indicator - Desktop only */}
           <motion.div
             ref={tabIndicatorRef}
+            className="tab-indicator"
             style={{
               position: 'absolute',
               top: 'var(--space-2)',
@@ -206,7 +209,7 @@ export default function Projects() {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              className={filter === tab.id ? 'active' : ''}
+              className={`tab-btn ${filter === tab.id ? 'active' : ''}`}
               onClick={() => setFilter(tab.id)}
               style={{
                 position: 'relative',
@@ -218,11 +221,15 @@ export default function Projects() {
                 textTransform: 'uppercase',
                 padding: '8px 14px',
                 borderRadius: '99px',
-                background: 'none',
+                background: filter === tab.id ? 'var(--red)' : 'none',
                 border: 'none',
                 color: filter === tab.id ? '#fff' : 'var(--mute)',
                 cursor: 'pointer',
-                transition: 'color var(--transition-fast)',
+                transition: 'color var(--transition-fast), background var(--transition-fast)',
+                minHeight: '44px',
+                flex: '1 1 auto',
+                minWidth: '0',
+                textAlign: 'center',
               }}
             >
               {tab.label}
@@ -238,6 +245,7 @@ export default function Projects() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.3 }}
           style={{ gap: '8px' }}
+          role="list"
         >
           <AnimatePresence mode="popLayout">
             {list.map((p) => (
@@ -246,6 +254,7 @@ export default function Projects() {
                 key={p.title}
                 className="card card-hover s3"
                 data-project
+                role="listitem"
                 initial={{ opacity: 1, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9, x: -20 }}
@@ -255,7 +264,7 @@ export default function Projects() {
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
-                  minHeight: '240px',
+                  minHeight: 'auto',
                 }}
               >
                 {/* Project Image */}

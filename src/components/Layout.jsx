@@ -92,6 +92,9 @@ export default function Layout() {
                   color: pathname === n.to ? 'var(--bg)' : 'var(--ink)',
                   cursor: 'pointer',
                   transition: 'background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease)',
+                  minHeight: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
                 }}
               >
                 {n.label}
@@ -113,6 +116,7 @@ export default function Layout() {
                 color: 'var(--ink)',
                 cursor: 'pointer',
                 transition: 'background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease)',
+                minHeight: '44px',
               }}
             >
               Theme
@@ -124,6 +128,7 @@ export default function Layout() {
             className="nav-burger"
             aria-label="Menu"
             aria-expanded={open}
+            aria-controls="mobile-nav"
             onClick={() => setOpen(!open)}
             style={{
               display: 'none',
@@ -132,6 +137,8 @@ export default function Layout() {
               padding: 'var(--space-2)',
               cursor: 'pointer',
               color: 'var(--ink)',
+              minHeight: '44px',
+              minWidth: '44px',
             }}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -153,6 +160,7 @@ export default function Layout() {
 
         {/* Mobile Nav */}
         <motion.nav
+          id="mobile-nav"
           className="nav-menu mobile"
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: open ? 1 : 0, height: open ? 'auto' : 0 }}
@@ -180,8 +188,11 @@ export default function Layout() {
                 letterSpacing: 'var(--tracking-widest)',
                 textTransform: 'uppercase',
                 color: pathname === n.to ? 'var(--red)' : 'var(--ink)',
-                padding: 'var(--space-3) 0',
+                padding: 'var(--space-4) 0',
                 borderBottom: '1px solid var(--line)',
+                minHeight: '48px',
+                display: 'flex',
+                alignItems: 'center',
               }}
             >
               {n.label}
@@ -196,7 +207,7 @@ export default function Layout() {
               fontFamily: 'var(--mono)',
               fontSize: '.78rem',
               textDecoration: 'none',
-              padding: '8px 14px',
+              padding: '10px 16px',
               border: '1px solid var(--line)',
               borderRadius: '99px',
               background: 'transparent',
@@ -205,6 +216,8 @@ export default function Layout() {
               transition: 'background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease)',
               marginTop: 'var(--space-4)',
               alignSelf: 'flex-start',
+              minHeight: '44px',
+              minWidth: '44px',
             }}
           >
             Theme

@@ -946,8 +946,445 @@ main, header {
   }
 }
 
-/* Mobile Nav */
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+
+/* Large tablets / small laptops */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 24px;
+  }
+
+  :root {
+    --space-4: 12px;
+    --space-5: 16px;
+    --space-6: 20px;
+    --space-8: 24px;
+    --space-10: 32px;
+    --space-12: 36px;
+    --space-16: 48px;
+    --space-20: 64px;
+    --space-24: 80px;
+    --space-32: 96px;
+  }
+}
+
+/* Tablets */
+@media (max-width: 860px) {
+  .s2, .s3, .s4, .s6 { grid-column: span 6; }
+
+  .grid.grid-cols-6 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .grid.grid-cols-6 > .s3,
+  .grid.grid-cols-6 > .s6 {
+    grid-column: span 2;
+  }
+
+  :root {
+    --text-9xl: 5.5rem;
+    --text-8xl: 4.5rem;
+    --text-7xl: 3.75rem;
+    --text-6xl: 3rem;
+  }
+}
+
+/* Mobile landscape */
+@media (max-width: 640px) {
+  .grid.grid-cols-6 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .grid.grid-cols-6 > .s2,
+  .grid.grid-cols-6 > .s3,
+  .grid.grid-cols-6 > .s4,
+  .grid.grid-cols-6 > .s6 {
+    grid-column: span 1 !important;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  :root {
+    --space-1: 2px;
+    --space-2: 4px;
+    --space-3: 8px;
+    --space-4: 12px;
+    --space-5: 14px;
+    --space-6: 16px;
+    --space-8: 20px;
+    --space-10: 28px;
+    --space-12: 32px;
+    --space-16: 40px;
+    --space-20: 56px;
+    --space-24: 72px;
+    --space-32: 88px;
+
+    --text-xs: 0.625rem;     /* 10px */
+    --text-sm: 0.75rem;      /* 12px */
+    --text-base: 0.875rem;   /* 14px */
+    --text-lg: 1rem;         /* 16px */
+    --text-xl: 1.125rem;     /* 18px */
+    --text-2xl: 1.25rem;     /* 20px */
+    --text-3xl: 1.5rem;      /* 24px */
+    --text-4xl: 1.875rem;    /* 30px */
+    --text-5xl: 2.25rem;     /* 36px */
+
+    --radius-3xl: 16px;
+    --radius-2xl: 16px;
+    --radius-xl: 12px;
+    --radius-lg: 8px;
+    --radius-md: 6px;
+    --radius-sm: 2px;
+  }
+
+  .display-hero {
+    font-size: clamp(2rem, 10vw, 4.5rem);
+    line-height: 0.85;
+  }
+
+  .display-lg {
+    font-size: clamp(1.75rem, 8vw, 2.5rem);
+    line-height: 0.9;
+  }
+
+  .h1 {
+    font-size: var(--text-xl);
+  }
+
+  .body-lg {
+    font-size: var(--text-base);
+  }
+
+  .card {
+    min-height: auto;
+    padding: var(--space-4);
+  }
+
+  .card-case {
+    min-height: auto;
+    padding: var(--space-5);
+  }
+
+  .card-contact {
+    min-height: auto;
+    padding: var(--space-5);
+  }
+
+  .btn {
+    padding: 8px 14px;
+    font-size: var(--text-xs);
+  }
+
+  .btn-lg {
+    padding: 10px 18px;
+    font-size: var(--text-sm);
+  }
+
+  .pill {
+    padding: 6px 12px;
+    font-size: var(--text-xs);
+  }
+
+  .tag {
+    padding: 3px 8px;
+    font-size: 0.625rem;
+  }
+
+  .input, .textarea {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  .field-label {
+    font-size: 0.5625rem; /* 9px */
+  }
+
+  nav a {
+    padding: 6px 10px;
+    font-size: 0.625rem;
+  }
+
+  /* Stack form fields on mobile */
+  .form-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tabs on mobile */
+  .tabs {
+    flex-wrap: wrap !important;
+  }
+
+  .tabs button {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    padding: 6px 8px;
+    font-size: 0.5625rem;
+  }
+
+  .tabs .active-indicator {
+    display: none !important;
+  }
+
+  /* Lightbox close button on mobile */
+  .lightbox-close {
+    top: 8px !important;
+    right: 8px !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  /* Mobile nav menu items */
+  .nav-menu.mobile a {
+    font-size: 1rem !important;
+    padding: var(--space-4) 0 !important;
+  }
+}
+
+/* Mobile portrait */
+@media (max-width: 480px) {
+  :root {
+    --space-4: 10px;
+    --space-5: 12px;
+    --space-6: 14px;
+    --space-8: 18px;
+    --space-10: 24px;
+    --space-12: 28px;
+    --space-16: 36px;
+    --space-20: 48px;
+
+    --text-base: 0.8125rem;  /* 13px */
+    --text-sm: 0.75rem;      /* 12px */
+    --text-xs: 0.5625rem;    /* 9px */
+  }
+
+  .container {
+    padding: 0 12px;
+  }
+
+  .display-hero {
+    font-size: clamp(1.75rem, 9vw, 3.5rem);
+  }
+
+  .display-lg {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+  }
+
+  .hero {
+    padding: clamp(24px, 5vw, 60px) 0 32px;
+  }
+
+  .clock .t {
+    font-size: clamp(1.75rem, 6vw, 2.5rem);
+  }
+
+  .ring {
+    width: 70px;
+    height: 70px;
+    right: -14px;
+    bottom: -14px;
+    border-width: 8px;
+  }
+
+  .bars {
+    height: 40px;
+    gap: 3px;
+  }
+
+  .brand {
+    font-size: 1rem;
+    gap: 6px;
+  }
+
+  .brand i {
+    width: 8px;
+    height: 8px;
+  }
+
+  .meta span {
+    font-size: 0.5rem;
+    padding: 3px 6px;
+  }
+
+  .stack span {
+    font-size: 0.5625rem;
+    padding: 4px 8px;
+  }
+
+  .list li {
+    padding: 10px 0;
+    font-size: var(--text-sm);
+  }
+
+  .list b {
+    font-size: var(--text-base);
+  }
+
+  footer {
+    padding: 12px 16px 24px;
+  }
+
+  .card {
+    border-radius: var(--radius-2xl);
+  }
+
+  .card-case, .card-contact {
+    border-radius: var(--radius-2xl);
+  }
+}
+
+/* Ensure burger menu is visible on mobile */
 @media (max-width: 768px) {
   .nav-menu.desktop { display: none !important; }
   .nav-burger { display: flex !important; }
+}
+
+/* For very small screens where 768px breakpoint isn't enough */
+@media (max-width: 640px) {
+  .nav-menu.desktop { display: none !important; }
+  .nav-burger { display: flex !important; }
+}
+
+/* Print styles */
+@media print {
+  .nav, .nav-menu, .nav-burger, .hero .row, .btn, .card-hover:hover,
+  .lightbox, footer {
+    display: none !important;
+  }
+  body { background: white; color: black; }
+  .card { break-inside: avoid; }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --line: currentColor;
+    --mute: currentColor;
+  }
+  .btn, .card, .input, .textarea { border-width: 2px; }
+}
+
+/* Touch-friendly targets */
+@media (hover: none) and (pointer: coarse) {
+  .btn, nav a, .pill, .tag, .input, .textarea, button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .card-hover:hover {
+    transform: none;
+  }
+
+  .card-interactive:hover {
+    transform: none;
+  }
+
+  .nav-menu.mobile a {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Projects page tabs */
+.tab-indicator {
+  /* Desktop styles handled inline */
+}
+
+@media (max-width: 640px) {
+  .tab-indicator {
+    display: none !important;
+  }
+
+  .tabs {
+    flex-wrap: wrap !important;
+  }
+
+  .tab-btn {
+    font-size: 0.5625rem !important;
+    padding: 6px 8px !important;
+    background: transparent !important;
+    color: var(--mute) !important;
+  }
+
+  .tab-btn.active {
+    background: var(--red) !important;
+    color: #fff !important;
+  }
+}
+
+/* Project cards responsive */
+@media (max-width: 640px) {
+  .proj-grid {
+    gap: 8px !important;
+  }
+
+  .proj-grid .card {
+    min-height: auto !important;
+  }
+
+  .proj-img {
+    aspect-ratio: 16/10 !important;
+  }
+}
+
+/* Lightbox responsive */
+@media (max-width: 640px) {
+  .lightbox-close {
+    top: 8px !important;
+    right: 8px !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+/* About page bento tight grid responsive */
+@media (max-width: 640px) {
+  .bento.tight {
+    grid-template-columns: 1fr !important;
+  }
+
+  .bento.tight > * {
+    min-width: 0;
+  }
+}
+
+/* Skills section responsive */
+@media (max-width: 640px) {
+  .skills-grid {
+    gap: 10px !important;
+  }
+
+  .skills-grid .card {
+    padding: var(--space-4) !important;
+    min-height: auto !important;
+  }
+}
+
+/* GlyphStrip responsive */
+@media (max-width: 640px) {
+  .glyph-strip {
+    width: 100% !important;
+    max-width: 200px;
+  }
+}
+
+/* Contact form responsive */
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .contact .card-contact {
+    min-height: auto !important;
+    padding: var(--space-4) !important;
+  }
+
+  .contact .card {
+    padding: var(--space-4) !important;
+  }
 }

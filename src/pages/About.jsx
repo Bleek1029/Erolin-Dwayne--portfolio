@@ -123,7 +123,7 @@ export default function About() {
           style={{ marginTop: 'var(--space-8)', gap: '14px' }}
         >
           {/* Photo Card - s3 */}
-          <figure className="card s3" style={{ margin: 0, aspectRatio: '3/4', overflow: 'hidden', position: 'relative', background: 'var(--surface)', maxWidth: '320px', marginLeft: 'auto', marginRight: 'auto' }}>
+          <figure className="card s3" style={{ margin: 0, aspectRatio: '3/4', overflow: 'hidden', position: 'relative', background: 'var(--surface)', maxWidth: '320px', marginLeft: 'auto', marginRight: 'auto', minHeight: 'auto', padding: '0' }}>
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%)', zIndex: 0 }}>
               <div style={{
                 position: 'absolute',
@@ -170,7 +170,7 @@ export default function About() {
               <h2 className="h1">About</h2>
               <p style={{ marginTop: '10px', color: 'var(--mute)' }}>I'm a full-stack developer with expertise in creating modern web applications. My journey in tech started years ago, and since then I've been constantly learning and evolving to stay at the cutting edge of technology.</p>
             </div>
-            <div className="bento tight" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+            <div className="bento tight" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }} role="list">
               <div className="card-padded" style={{ background: 'var(--bg)', borderRadius: 'var(--radius-xl)', textAlign: 'center', padding: 'var(--space-4)' }}>
                 <motion.b style={{ fontFamily: 'var(--dot)', fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3rem)', lineHeight: 1 }}>
                   <Count to={2} />
@@ -207,9 +207,9 @@ export default function About() {
           transition={{ delay: 0.4, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{ marginTop: 'var(--space-16)' }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-8)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-8)', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
             <motion.h2 className="h1">What I work with</motion.h2>
-            <GlyphStrip active pattern="binary" speed={1} style={{ width: '200px', height: '4px' }} />
+            <GlyphStrip active pattern="binary" speed={1} style={{ width: '200px', height: '4px', flexShrink: 0 }} />
           </div>
 
           <div className="grid grid-cols-6" style={{ gap: '14px' }}>
@@ -218,6 +218,7 @@ export default function About() {
                 key={s.label}
                 className="card card-hover s3"
                 data-skill
+                role="listitem"
                 whileHover={{ y: -8 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 style={{
@@ -227,6 +228,7 @@ export default function About() {
                   gap: 'var(--space-4)',
                   position: 'relative',
                   overflow: 'hidden',
+                  minHeight: 'auto',
                 }}
               >
                 {/* Top accent line */}
