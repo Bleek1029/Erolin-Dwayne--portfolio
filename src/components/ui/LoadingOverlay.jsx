@@ -10,11 +10,12 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
   const percentRef = useRef(0);
   const reduceMotionRef = useRef(false);
 
-  // Constants matching the original
+  // Constants matching the original EXACTLY
   const N = 21; // grid size
   const C = 10; // center index
   const CYCLE = 4; // cycle duration in seconds
-  const RUN = 3; // run duration in seconds (expansion phase)
+  const RUN = 2.9; // run duration in seconds (expansion phase) - EXACT from original
+  const MAXR = Math.hypot(C, C) + 1; // EXACT from original
 
   useEffect(() => {
     setMounted(true);
@@ -23,7 +24,7 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
     if (showOnMount) {
       startTimeRef.current = performance.now();
       animate();
-      const timer = setTimeout(() => setShow(false), 1500);
+      const timer = setTimeout(() => setShow(false), RUN * 1000);
       return () => clearTimeout(timer);
     }
   }, [showOnMount]);
@@ -35,7 +36,7 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
       startTimeRef.current = performance.now();
       animate();
     } else {
-      const timer = setTimeout(() => setShow(false), 600);
+      const timer = setTimeout(() => setShow(false), 300);
       return () => clearTimeout(timer);
     }
   }, [isLoading, mounted]);
@@ -62,7 +63,7 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
     };
   };
 
-  const draw = () => {
+  const draw = (timeSeconds) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -74,11 +75,9 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
     canvas.height = S * r;
     ctx.setTransform(r, 0, 0, r, 0, 0);
 
-    const now = performance.now();
-    const ph = (now - startTimeRef.current) / 1000 % CYCLE;
+    const ph = timeSeconds % CYCLE;
     const p = Math.min(1, ph / RUN);
     const e = 1 - Math.pow(1 - p, 3);
-    const MAXR = Math.hypot(C, C) + 1;
     const R = e * MAXR;
     const cell = S / N;
 
@@ -124,7 +123,9 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
   };
 
   const animate = () => {
-    draw();
+    const now = performance.now();
+    const timeSeconds = (now - startTimeRef.current) / 1000;
+    draw(timeSeconds);
     if (show) {
       animationRef.current = requestAnimationFrame(animate);
     }
