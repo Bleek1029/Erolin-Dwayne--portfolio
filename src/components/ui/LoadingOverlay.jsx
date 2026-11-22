@@ -13,8 +13,8 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
   // Constants matching the original
   const N = 21; // grid size
   const C = 10; // center index
-  const CYCLE = 6; // cycle duration in seconds (slower)
-  const RUN = 4.5; // run duration in seconds (slower)
+  const CYCLE = 4; // cycle duration in seconds
+  const RUN = 3; // run duration in seconds (expansion phase)
 
   useEffect(() => {
     setMounted(true);
@@ -23,7 +23,7 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
     if (showOnMount) {
       startTimeRef.current = performance.now();
       animate();
-      const timer = setTimeout(() => setShow(false), 2000);
+      const timer = setTimeout(() => setShow(false), 1500);
       return () => clearTimeout(timer);
     }
   }, [showOnMount]);
@@ -35,7 +35,7 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
       startTimeRef.current = performance.now();
       animate();
     } else {
-      const timer = setTimeout(() => setShow(false), 800);
+      const timer = setTimeout(() => setShow(false), 600);
       return () => clearTimeout(timer);
     }
   }, [isLoading, mounted]);
