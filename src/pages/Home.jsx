@@ -17,6 +17,7 @@ export default function Home() {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
+      // Use toLocaleTimeString with timezone for accurate Manila time
       const manilaTime = now.toLocaleTimeString('en-PH', {
         timeZone: 'Asia/Manila',
         hour: '2-digit',
@@ -26,7 +27,8 @@ export default function Home() {
       setTime(manilaTime);
     };
     updateTime();
-    const interval = setInterval(updateTime, 15000);
+    // Update every minute for accurate live clock
+    const interval = setInterval(updateTime, 60000);
     return () => clearInterval(interval);
   }, []);
 
