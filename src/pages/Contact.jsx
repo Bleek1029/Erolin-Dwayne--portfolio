@@ -38,6 +38,7 @@ export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [errors, setErrors] = useState({});
 
+  // Animate contact items on scroll
   useEffect(() => {
     const ctx = gsap.context(() => {
       ScrollTrigger.batch('[data-contact]', {
@@ -48,6 +49,20 @@ export default function Contact() {
       });
     });
     return () => ctx.revert();
+  }, []);
+
+  // Scroll reveal
+  useEffect(() => {
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.rise').forEach((el) => io.observe(el));
+    return () => io.disconnect();
   }, []);
 
   const validate = () => {
@@ -66,16 +81,32 @@ export default function Contact() {
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setStatus('sending');
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send message');
+      }
+
       setStatus('sent');
       setFormData({ name: '', email: '', subject: '', message: '' });
       setTimeout(() => setStatus(''), 3000);
-    }, 1200);
+    } catch (error) {
+      setStatus('error');
+      console.error('Submit error:', error);
+      setTimeout(() => setStatus(''), 3000);
+    }
   };
 
   return (
@@ -83,17 +114,18 @@ export default function Contact() {
       <div className="container">
         {/* Header */}
         <motion.div
+          className="rise"
           initial={{ opacity: 1, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
             <GlyphStrip active pattern="pulse" speed={1.5} style={{ width: '120px', height: '4px' }} />
-            <span className="label" style={{ color: 'var(--color-accent)' }}>COMMUNICATION CHANNEL OPEN</span>
+            <span className="label" style={{ color: 'var(--red)' }}>COMMUNICATION CHANNEL OPEN</span>
           </div>
 
           <motion.h1
-            className="display-sm"
+            className="display-lg"
             initial={{ opacity: 1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -112,22 +144,16 @@ export default function Contact() {
           </motion.p>
         </motion.div>
 
-        {/* Contact Grid */}
+        {/* Contact Grid - 6 column grid */}
         <motion.div
-          className="contact-grid"
+          className="grid grid-cols-6 rise"
           initial={{ opacity: 1, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1.2fr',
-            gap: 'var(--space-8)',
-            marginTop: 'var(--space-12)',
-            alignItems: 'start',
-          }}
+          style={{ marginTop: 'var(--space-8)', gap: '14px', alignItems: 'start' }}
         >
-          {/* Contact Info */}
-          <div className="contact-info" style={{ display: 'grid', gap: 'var(--space-4)' }}>
+          {/* Contact Info - s3 */}
+          <div className="card s3" style={{ display: 'grid', gap: 'var(--space-4)' }}>
             {info.map((item) => (
               <a
                 key={item.label}
@@ -138,12 +164,16 @@ export default function Contact() {
                   display: 'flex',
                   gap: 'var(--space-4)',
                   alignItems: 'center',
-                  padding: 'var(--space-5)',
+                  padding: 'var(--space-4)',
                   textDecoration: 'none',
                   color: 'inherit',
+                  borderRadius: 'var(--radius-xl)',
+                  background: 'var(--bg)',
+                  border: '1px solid var(--line)',
+                  transition: 'border-color var(--transition-fast)',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--red)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; }}
               >
                 <div style={{
                   display: 'grid',
@@ -151,23 +181,23 @@ export default function Contact() {
                   width: '48px',
                   height: '48px',
                   borderRadius: 'var(--radius-md)',
-                  background: 'var(--color-background)',
-                  border: '1px solid var(--color-border)',
-                  color: 'var(--color-accent)',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--line)',
+                  color: 'var(--red)',
                   flexShrink: 0,
                 }}>
                   {ContactIcons[item.icon]}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <h4 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-sm)', lineHeight: 1.2, textTransform: 'uppercase', letterSpacing: 'var(--tracking-tight)', marginBottom: 'var(--space-1)' }}>
+                  <h4 style={{ fontFamily: 'var(--sans)', fontWeight: 500, fontSize: 'var(--text-sm)', lineHeight: 1.2, textTransform: 'uppercase', letterSpacing: 'var(--tracking-tight)', marginBottom: 'var(--space-1)' }}>
                     {item.label}
                   </h4>
-                  <p className="body-sm" style={{ wordBreak: 'break-word' }}>
+                  <p style={{ fontFamily: 'var(--sans)', fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-normal)', color: 'var(--mute)', wordBreak: 'break-word' }}>
                     {item.value}
                   </p>
                 </div>
                 {item.href && (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted-foreground)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transition: 'stroke var(--transition-fast), transform var(--transition-fast)' }} aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mute)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transition: 'stroke var(--transition-fast), transform var(--transition-fast)' }} aria-hidden="true">
                     <line x1="5" y1="12" x2="19" y2="12" />
                     <polyline points="12 5 19 12 12 19" />
                   </svg>
@@ -181,111 +211,123 @@ export default function Contact() {
             </div>
 
             {/* Status Indicators */}
-            <div data-contact style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', padding: 'var(--space-4)', background: 'var(--color-background)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontFamily: 'var(--font-ui)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>
+            <div data-contact style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', padding: 'var(--space-4)', background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-xl)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontFamily: 'var(--mono)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} />
-                <span style={{ color: 'var(--color-foreground)' }}>SYSTEM ONLINE</span>
-                <span style={{ marginLeft: 'auto', color: 'var(--color-muted-foreground)', fontFamily: 'var(--font-mono)' }}>v1.0.0</span>
+                <span style={{ color: 'var(--ink)' }}>SYSTEM ONLINE</span>
+                <span style={{ marginLeft: 'auto', color: 'var(--mute)', fontFamily: 'var(--mono)' }}>v1.0.0</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontFamily: 'var(--font-ui)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-accent)', boxShadow: '0 0 8px var(--color-accent-glow)', animation: 'glyph-pulse 1.5s ease-in-out infinite' }} />
-                <span style={{ color: 'var(--color-foreground)' }}>PORT OPEN</span>
-                <span style={{ marginLeft: 'auto', color: 'var(--color-muted-foreground)', fontFamily: 'var(--font-mono)' }}>PORT 443</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontFamily: 'var(--mono)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--red)', boxShadow: '0 0 8px rgba(215, 25, 33, 0.5)', animation: 'blink 1.5s ease-in-out infinite' }} />
+                <span style={{ color: 'var(--ink)' }}>PORT OPEN</span>
+                <span style={{ marginLeft: 'auto', color: 'var(--mute)', fontFamily: 'var(--mono)' }}>PORT 443</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontFamily: 'var(--font-ui)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontFamily: 'var(--mono)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 8px #f59e0b' }} />
-                <span style={{ color: 'var(--color-foreground)' }}>STANDBY MODE</span>
-                <span style={{ marginLeft: 'auto', color: 'var(--color-muted-foreground)', fontFamily: 'var(--font-mono)' }}>AWAITING INPUT</span>
+                <span style={{ color: 'var(--ink)' }}>STANDBY MODE</span>
+                <span style={{ marginLeft: 'auto', color: 'var(--mute)', fontFamily: 'var(--mono)' }}>AWAITING INPUT</span>
               </div>
             </div>
           </div>
 
-          {/* Form */}
-          <form ref={formRef} className="card" data-contact onSubmit={submit} style={{ padding: 'var(--space-6)', display: 'grid', gap: 'var(--space-4)' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
-              <Input
-                label="NAME"
-                id="name"
-                name="name"
-                placeholder="YOUR NAME"
-                value={formData.name}
-                onChange={handleChange}
-                error={errors.name}
-                aria-describedby={errors.name ? 'name-error' : undefined}
-              />
-              <Input
-                label="EMAIL"
-                id="email"
-                name="email"
-                type="email"
-                placeholder="YOUR EMAIL"
-                value={formData.email}
-                onChange={handleChange}
-                error={errors.email}
-                aria-describedby={errors.email ? 'email-error' : undefined}
-              />
+          {/* Contact Form & Red Card - s3 */}
+          <div className="s3" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {/* Red Contact Card */}
+            <div className="card-contact" style={{ minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px' }}>
+              <div className="dot">Let's<br />build it.</div>
+              <div style={{ marginTop: '22px' }}>
+                <p style={{ opacity: .85 }}>Looking for a team that cares about people who actually use the product.</p>
+                <p style={{ marginTop: '12px' }}><a href="mailto:erolindwayneee@gmail.com">erolindwayneee@gmail.com</a></p>
+              </div>
             </div>
 
-            <Input
-              label="SUBJECT"
-              id="subject"
-              name="subject"
-              placeholder="PROJECT TYPE / INQUIRY"
-              value={formData.subject}
-              onChange={handleChange}
-            />
-
-            <Textarea
-              label="MESSAGE"
-              id="message"
-              name="message"
-              placeholder="DESCRIBE YOUR PROJECT..."
-              value={formData.message}
-              onChange={handleChange}
-              error={errors.message}
-              rows={6}
-            />
-
-            {/* Glyph Progress during sending */}
-            {status === 'sending' && (
-              <div style={{ marginTop: 'var(--space-2)' }}>
-                <GlyphStrip active pattern="scan" speed={3} style={{ width: '100%', height: '4px' }} />
-                <p className="label" style={{ textAlign: 'center', marginTop: 'var(--space-2)', color: 'var(--color-accent)' }}>TRANSMITTING...</p>
+            {/* Form Card */}
+            <form ref={formRef} className="card" data-contact onSubmit={submit} style={{ padding: '24px', display: 'grid', gap: 'var(--space-4)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+                <Input
+                  label="NAME"
+                  id="name"
+                  name="name"
+                  placeholder="YOUR NAME"
+                  value={formData.name}
+                  onChange={handleChange}
+                  error={errors.name}
+                  aria-describedby={errors.name ? 'name-error' : undefined}
+                />
+                <Input
+                  label="EMAIL"
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="YOUR EMAIL"
+                  value={formData.email}
+                  onChange={handleChange}
+                  error={errors.email}
+                  aria-describedby={errors.email ? 'email-error' : undefined}
+                />
               </div>
-            )}
 
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={status === 'sending'}
-              style={{ justifySelf: 'start', minWidth: '160px' }}
-            >
-              {status === 'sent' ? (
-                <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  SENT. THANK YOU
-                </>
-              ) : status === 'sending' ? (
-                <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin" aria-hidden="true">
-                    <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
-                    <path d="M12 2a10 10 0 0 1 10 10" strokeOpacity="1" />
-                  </svg>
-                  SENDING...
-                </>
-              ) : (
-                <>
-                  SEND MESSAGE
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <line x1="22" y1="2" x2="11" y2="13" />
-                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                  </svg>
-                </>
+              <Input
+                label="SUBJECT"
+                id="subject"
+                name="subject"
+                placeholder="PROJECT TYPE / INQUIRY"
+                value={formData.subject}
+                onChange={handleChange}
+              />
+
+              <Textarea
+                label="MESSAGE"
+                id="message"
+                name="message"
+                placeholder="DESCRIBE YOUR PROJECT..."
+                value={formData.message}
+                onChange={handleChange}
+                error={errors.message}
+                rows={6}
+              />
+
+              {/* Glyph Progress during sending */}
+              {status === 'sending' && (
+                <div style={{ marginTop: 'var(--space-2)' }}>
+                  <GlyphStrip active pattern="scan" speed={3} style={{ width: '100%', height: '4px' }} />
+                  <p className="label" style={{ textAlign: 'center', marginTop: 'var(--space-2)', color: 'var(--red)' }}>TRANSMITTING...</p>
+                </div>
               )}
-            </Button>
-          </form>
+
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={status === 'sending'}
+                style={{ justifySelf: 'start', minWidth: '160px' }}
+              >
+                {status === 'sent' ? (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    SENT. THANK YOU
+                  </>
+                ) : status === 'sending' ? (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                      <path d="M12 2a10 10 0 0 1 10 10" strokeOpacity="1" />
+                    </svg>
+                    SENDING...
+                  </>
+                ) : (
+                  <>
+                    SEND MESSAGE
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <line x1="22" y1="2" x2="11" y2="13" />
+                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
+                  </>
+                )}
+              </Button>
+            </form>
+          </div>
         </motion.div>
       </div>
     </div>

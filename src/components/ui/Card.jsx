@@ -29,14 +29,18 @@ const Card = forwardRef(({
   ].filter(Boolean).join(' ');
 
   const Component = interactive ? motion.div : 'div';
+  const isMotion = interactive;
+  const motionProps = isMotion ? {
+    whileHover: hover ? { y: -4 } : undefined,
+    transition: { type: 'spring', stiffness: 300, damping: 20 },
+  } : {};
 
   return (
     <Component
       ref={ref}
       className={classes}
       style={style}
-      whileHover={hover ? { y: -4 } : undefined}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      {...motionProps}
       {...props}
     >
       {children}

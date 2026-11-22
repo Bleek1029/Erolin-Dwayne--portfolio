@@ -1,7 +1,7 @@
+import { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import gsap from 'gsap';
-import { useEffect } from 'react';
 import { GlyphStrip, Count, Card } from '../components/ui';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -55,6 +55,7 @@ const SkillIcons = {
 };
 
 export default function About() {
+  // Animate skills on scroll
   useEffect(() => {
     const ctx = gsap.context(() => {
       ScrollTrigger.batch('[data-skill]', {
@@ -73,22 +74,37 @@ export default function About() {
     return () => ctx.revert();
   }, []);
 
+  // Scroll reveal
+  useEffect(() => {
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.rise').forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
   return (
     <div className="page" style={{ paddingTop: '120px', paddingBottom: 'var(--space-20)', minHeight: '100vh' }}>
       <div className="container">
         {/* Header */}
         <motion.div
+          className="rise"
           initial={{ opacity: 1, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
             <GlyphStrip active pattern="pulse" speed={1.5} style={{ width: '120px', height: '4px' }} />
-            <span className="label" style={{ color: 'var(--color-accent)' }}>MODULE REGISTRY ACTIVE</span>
+            <span className="label" style={{ color: 'var(--red)' }}>MODULE REGISTRY ACTIVE</span>
           </div>
 
           <motion.h1
-            className="display-sm"
+            className="display-lg"
             initial={{ opacity: 1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -98,30 +114,24 @@ export default function About() {
           </motion.h1>
         </motion.div>
 
-        {/* About Grid */}
+        {/* About Grid - 6 column grid */}
         <motion.div
-          className="about-grid"
+          className="grid grid-cols-6 rise"
           initial={{ opacity: 1, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '0.85fr 1.15fr',
-            gap: 'var(--space-8)',
-            alignItems: 'start',
-            marginTop: 'var(--space-12)',
-          }}
+          style={{ marginTop: 'var(--space-8)', gap: '14px' }}
         >
-          {/* Photo Card */}
-          <figure className="card" style={{ margin: 0, aspectRatio: '4/5', overflow: 'hidden', position: 'relative', background: 'var(--color-card)' }}>
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, var(--color-card) 0%, var(--color-background) 100%)', zIndex: 0 }}>
+          {/* Photo Card - s3 */}
+          <figure className="card s3" style={{ margin: 0, aspectRatio: '3/4', overflow: 'hidden', position: 'relative', background: 'var(--surface)', maxWidth: '320px', marginLeft: 'auto', marginRight: 'auto' }}>
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%)', zIndex: 0 }}>
               <div style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 right: 0,
                 height: '3px',
-                background: 'linear-gradient(90deg, transparent, var(--color-accent), transparent)',
+                background: 'linear-gradient(90deg, transparent, var(--red), transparent)',
                 opacity: 0.6,
               }} />
             </div>
@@ -149,82 +159,69 @@ export default function About() {
                   background: 'linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.3) 100%)',
                   pointerEvents: 'none',
                 }} />
-                <span className="label" style={{ position: 'absolute', bottom: 'var(--space-4)', left: 'var(--space-4)', color: 'var(--color-muted-foreground)', zIndex: 1 }}>DEVELOPER.UNIT</span>
+                <span className="label" style={{ position: 'absolute', bottom: 'var(--space-4)', left: 'var(--space-4)', color: 'var(--mute)', zIndex: 1 }}>DEVELOPER.UNIT</span>
               </div>
             </div>
           </figure>
 
-          {/* About Text & Stats */}
-          <div className="about-text" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
-            <Card variant="padded" hover style={{ padding: 'var(--space-6)' }}>
-              <motion.p
-                initial={{ opacity: 1, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-                className="body-lg"
-              >
-                I'm a full-stack developer with expertise in creating modern web applications. My journey in tech started years ago, and since then I've been constantly learning and evolving to stay at the cutting edge of technology.
-              </motion.p>
-              <motion.p
-                initial={{ opacity: 1, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                className="body-lg"
-              >
-                I specialize in building responsive, accessible, and performant websites that deliver exceptional user experiences. Every line of code I write is driven by a commitment to quality and innovation.
-              </motion.p>
-            </Card>
-
-            {/* Stats */}
-            <div className="bento tight" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-4)' }}>
-              <Card variant="padded" hover data-stat style={{ background: 'var(--color-accent)', borderColor: 'var(--color-accent)', color: 'var(--color-on-accent)', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', padding: 'var(--space-5)' }}>
-                <motion.b style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1, letterSpacing: 'var(--tracking-tighter)' }}>
+          {/* About Text & Stats - s2 */}
+          <div className="card s2" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+            <div>
+              <h2 className="h1">About</h2>
+              <p style={{ marginTop: '10px', color: 'var(--mute)' }}>I'm a full-stack developer with expertise in creating modern web applications. My journey in tech started years ago, and since then I've been constantly learning and evolving to stay at the cutting edge of technology.</p>
+            </div>
+            <div className="bento tight" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+              <div className="card-padded" style={{ background: 'var(--bg)', borderRadius: 'var(--radius-xl)', textAlign: 'center', padding: 'var(--space-4)' }}>
+                <motion.b style={{ fontFamily: 'var(--dot)', fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3rem)', lineHeight: 1 }}>
                   <Count to={2} />
                 </motion.b>
-                <span style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--text-xs)', color: 'rgba(15,23,42,0.7)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>YEARS EXPERIENCE</span>
-              </Card>
-              <Card variant="padded" hover data-stat style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', padding: 'var(--space-5)' }}>
-                <motion.b style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1, letterSpacing: 'var(--tracking-tighter)' }}>
+                <span className="label">YEARS EXPERIENCE</span>
+              </div>
+              <div className="card-padded" style={{ background: 'var(--bg)', borderRadius: 'var(--radius-xl)', textAlign: 'center', padding: 'var(--space-4)' }}>
+                <motion.b style={{ fontFamily: 'var(--dot)', fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3rem)', lineHeight: 1 }}>
                   <Count to={5} />
                 </motion.b>
-                <span style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--text-xs)', color: 'var(--color-muted-foreground)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>PROJECTS DONE</span>
-              </Card>
-              <Card variant="padded" hover data-stat style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', padding: 'var(--space-5)' }}>
-                <motion.b style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1, letterSpacing: 'var(--tracking-tighter)' }}>
+                <span className="label">PROJECTS DONE</span>
+              </div>
+              <div className="card-padded" style={{ background: 'var(--bg)', borderRadius: 'var(--radius-xl)', textAlign: 'center', padding: 'var(--space-4)' }}>
+                <motion.b style={{ fontFamily: 'var(--dot)', fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3rem)', lineHeight: 1 }}>
                   <Count to={1} />
                 </motion.b>
-                <span style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--text-xs)', color: 'var(--color-muted-foreground)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-widest)' }}>ACTIVE CLIENT</span>
-              </Card>
+                <span className="label">ACTIVE CLIENT</span>
+              </div>
+              <div className="card-padded" style={{ background: 'var(--bg)', borderRadius: 'var(--radius-xl)', textAlign: 'center', padding: 'var(--space-4)' }}>
+                <motion.b style={{ fontFamily: 'var(--dot)', fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3rem)', lineHeight: 1 }}>
+                  <Count to={10} />
+                </motion.b>
+                <span className="label">MODULES BUILT</span>
+              </div>
             </div>
           </div>
         </motion.div>
 
         {/* Skills Section */}
         <motion.section
+          className="rise"
           initial={{ opacity: 1, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{ marginTop: 'var(--space-16)' }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-8)' }}>
-            <motion.h2
-              className="h2"
-            >
-              What I work with
-            </motion.h2>
+            <motion.h2 className="h1">What I work with</motion.h2>
             <GlyphStrip active pattern="binary" speed={1} style={{ width: '200px', height: '4px' }} />
           </div>
 
-          <div className="skills" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-4)' }}>
+          <div className="grid grid-cols-6" style={{ gap: '14px' }}>
             {skills.map((s) => (
               <motion.article
                 key={s.label}
-                className="card card-hover"
+                className="card card-hover s3"
                 data-skill
                 whileHover={{ y: -8 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 style={{
-                  padding: 'var(--space-6)',
+                  padding: '24px',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 'var(--space-4)',
@@ -239,23 +236,23 @@ export default function About() {
                   left: 0,
                   right: 0,
                   height: '2px',
-                  background: 'linear-gradient(90deg, transparent, var(--color-accent), transparent)',
+                  background: 'linear-gradient(90deg, transparent, var(--red), transparent)',
                   opacity: 0,
                   transition: 'opacity var(--transition-base)',
                 }} />
 
-                <div style={{ display: 'grid', placeItems: 'center', width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: 'var(--color-background)', border: '1px solid var(--color-border)', color: 'var(--color-accent)' }}>
+                <div style={{ display: 'grid', placeItems: 'center', width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: 'var(--bg)', border: '1px solid var(--line)', color: 'var(--red)' }}>
                   {SkillIcons[s.icon]}
                 </div>
 
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
-                    <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-xl)', lineHeight: 1.2, textTransform: 'uppercase', letterSpacing: 'var(--tracking-tight)' }}>
+                    <h3 style={{ fontFamily: 'var(--sans)', fontWeight: 500, fontSize: 'var(--text-xl)', lineHeight: 1.2, textTransform: 'uppercase', letterSpacing: 'var(--tracking-tight)' }}>
                       {s.label}
                     </h3>
-                    <span className="label" style={{ fontSize: 'var(--text-xs)', color: 'var(--color-accent)' }}>{s.module}</span>
+                    <span className="label" style={{ fontSize: 'var(--text-xs)', color: 'var(--red)' }}>{s.module}</span>
                   </div>
-                  <p className="body-sm">{s.desc}</p>
+                  <p style={{ fontFamily: 'var(--sans)', fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-normal)', color: 'var(--mute)' }}>{s.desc}</p>
                 </div>
               </motion.article>
             ))}

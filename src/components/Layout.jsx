@@ -1,24 +1,27 @@
 import { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
-import MatrixRain from './MatrixRain';
-import GlyphStrip from './GlyphStrip';
 
 const nav = [
-  { to: '/', label: 'HOME' },
-  { to: '/about', label: 'ABOUT' },
-  { to: '/projects', label: 'WORK' },
-  { to: '/contact', label: 'CONTACT' },
+  { to: '/', label: 'Work' },
+  { to: '/projects', label: 'Projects' },
+  { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' },
 ];
 
-// Static year - avoids impure Date() call during render
 const CURRENT_YEAR = 2025;
 
 export default function Layout() {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [glyphActive, setGlyphActive] = useState(true);
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return document.documentElement.getAttribute('data-theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    }
+    return 'light';
+  });
 
   // Scroll listener for nav background
   useEffect(() => {
@@ -32,39 +35,17 @@ export default function Layout() {
   // Reset scroll on route change
   useEffect(() => {
     window.scrollTo(0, 0);
-    // Trigger glyph animation on page transition
-    requestAnimationFrame(() => {
-      setGlyphActive(false);
-      requestAnimationFrame(() => setGlyphActive(true));
-    });
   }, [pathname]);
+
+  // Theme toggle
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+  };
 
   return (
     <>
-      {/* Matrix Rain Background */}
-      <MatrixRain density={0.15} speed={0.5} color="#d71921" opacity={0.1} />
-
-      {/* Top Glyph Strip - Page Transition Indicator */}
-      <div
-        className="glyph-strip-top"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '3px',
-          zIndex: 9999,
-          pointerEvents: 'none',
-        }}
-      >
-        <GlyphStrip
-          active={glyphActive}
-          pattern="scan"
-          speed={2}
-          style={{ width: '100%', height: '100%' }}
-        />
-      </div>
-
       {/* Navigation */}
       <header
         className={`nav ${scrolled ? 'scrolled' : ''}`}
@@ -73,44 +54,27 @@ export default function Layout() {
           top: 0,
           left: 0,
           right: 0,
-          zIndex: 1000,
-          background: scrolled ? 'rgba(0, 0, 0, 0.95)' : 'transparent',
+          zIndex: 50,
+          background: scrolled ? 'rgba(242, 242, 240, 0.95)' : 'transparent',
           backdropFilter: scrolled ? 'blur(20px)' : 'none',
-          borderBottom: scrolled ? '1px solid var(--color-hairline)' : 'none',
+          borderBottom: scrolled ? '1px solid var(--line)' : 'none',
           transition: 'background var(--transition-base), border-color var(--transition-base)',
         }}
       >
-        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px' }}>
+        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '56px' }}>
           {/* Logo */}
           <Link
             to="/"
-            className="nav-logo"
+            className="brand"
             onClick={() => setOpen(false)}
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontWeight: 700,
-              fontSize: '1.25rem',
-              letterSpacing: 'var(--tracking-tight)',
-              textTransform: 'uppercase',
-              color: 'var(--color-foreground)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'var(--space-3)',
-            }}
+            aria-label="Dwayne Erolin - Home"
           >
-            <span style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: 'var(--color-accent)',
-              boxShadow: '0 0 12px var(--color-accent-glow)',
-              animation: 'glyph-pulse 2s ease-in-out infinite',
-            }} />
-            Dwayne
+            <i style={{ animation: 'blink 2s steps(1) infinite' }} />
+            DE
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="nav-menu desktop" style={{ display: 'flex', gap: 'var(--space-8)' }}>
+          <nav className="nav-menu desktop" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
             {nav.map((n) => (
               <Link
                 key={n.to}
@@ -118,31 +82,41 @@ export default function Layout() {
                 className={pathname === n.to ? 'active' : ''}
                 onClick={() => setOpen(false)}
                 style={{
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: 'var(--text-xs)',
-                  fontWeight: 500,
-                  letterSpacing: 'var(--tracking-widest)',
-                  textTransform: 'uppercase',
-                  color: pathname === n.to ? 'var(--color-accent)' : 'var(--color-muted-foreground)',
-                  padding: 'var(--space-2) 0',
-                  position: 'relative',
-                  transition: 'color var(--transition-fast)',
+                  fontFamily: 'var(--mono)',
+                  fontSize: '.78rem',
+                  textDecoration: 'none',
+                  padding: '8px 14px',
+                  border: '1px solid var(--line)',
+                  borderRadius: '99px',
+                  background: pathname === n.to ? 'var(--ink)' : 'transparent',
+                  color: pathname === n.to ? 'var(--bg)' : 'var(--ink)',
+                  cursor: 'pointer',
+                  transition: 'background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease)',
                 }}
               >
                 {n.label}
-                {pathname === n.to && (
-                  <span style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: '2px',
-                    background: 'var(--color-accent)',
-                    borderRadius: '2px',
-                  }} />
-                )}
               </Link>
             ))}
+            <button
+              className="tgl"
+              type="button"
+              aria-label="Switch light and dark theme"
+              onClick={toggleTheme}
+              style={{
+                fontFamily: 'var(--mono)',
+                fontSize: '.78rem',
+                textDecoration: 'none',
+                padding: '8px 14px',
+                border: '1px solid var(--line)',
+                borderRadius: '99px',
+                background: 'transparent',
+                color: 'var(--ink)',
+                cursor: 'pointer',
+                transition: 'background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease)',
+              }}
+            >
+              Theme
+            </button>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -157,7 +131,7 @@ export default function Layout() {
               border: 'none',
               padding: 'var(--space-2)',
               cursor: 'pointer',
-              color: 'var(--color-foreground)',
+              color: 'var(--ink)',
             }}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -187,8 +161,8 @@ export default function Layout() {
             display: 'flex',
             flexDirection: 'column',
             padding: 'var(--space-4) var(--space-6)',
-            borderTop: '1px solid var(--color-hairline)',
-            background: 'rgba(0, 0, 0, 0.98)',
+            borderTop: '1px solid var(--line)',
+            background: scrolled ? 'rgba(242, 242, 240, 0.98)' : 'transparent',
             backdropFilter: 'blur(20px)',
             overflow: 'hidden',
           }}
@@ -200,19 +174,41 @@ export default function Layout() {
               className={pathname === n.to ? 'active' : ''}
               onClick={() => setOpen(false)}
               style={{
-                fontFamily: 'var(--font-ui)',
+                fontFamily: 'var(--mono)',
                 fontSize: '1rem',
                 fontWeight: 500,
                 letterSpacing: 'var(--tracking-widest)',
                 textTransform: 'uppercase',
-                color: pathname === n.to ? 'var(--color-accent)' : 'var(--color-foreground)',
+                color: pathname === n.to ? 'var(--red)' : 'var(--ink)',
                 padding: 'var(--space-3) 0',
-                borderBottom: '1px solid var(--color-hairline)',
+                borderBottom: '1px solid var(--line)',
               }}
             >
               {n.label}
             </Link>
           ))}
+          <button
+            className="tgl"
+            type="button"
+            aria-label="Switch light and dark theme"
+            onClick={toggleTheme}
+            style={{
+              fontFamily: 'var(--mono)',
+              fontSize: '.78rem',
+              textDecoration: 'none',
+              padding: '8px 14px',
+              border: '1px solid var(--line)',
+              borderRadius: '99px',
+              background: 'transparent',
+              color: 'var(--ink)',
+              cursor: 'pointer',
+              transition: 'background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease)',
+              marginTop: 'var(--space-4)',
+              alignSelf: 'flex-start',
+            }}
+          >
+            Theme
+          </button>
         </motion.nav>
       </header>
 
@@ -221,7 +217,7 @@ export default function Layout() {
         key={pathname}
         initial={{ opacity: 1, y: 0 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ position: 'relative', zIndex: 10, minHeight: '100vh' }}
+        style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}
       >
         <Outlet />
       </motion.main>
@@ -229,39 +225,12 @@ export default function Layout() {
       {/* Footer */}
       <footer className="foot" style={{
         position: 'relative',
-        zIndex: 10,
-        borderTop: '1px solid var(--color-border)',
-        padding: 'var(--space-16) var(--space-6) var(--space-8)',
-        background: 'var(--color-card)',
+        zIndex: 1,
+        textAlign: 'center',
+        padding: '18px 20px 40px',
       }}>
-        <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', alignItems: 'center', textAlign: 'center' }}>
-            <p style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--text-xs)', letterSpacing: 'var(--tracking-widest)', textTransform: 'uppercase', color: 'var(--color-muted-foreground)' }}>
-              Erolin Prince Dwayne
-            </p>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-muted-foreground)' }}>
-              © {CURRENT_YEAR}  Build v1.0.0  •  Nothing OS Portfolio
-            </p>
-            <div style={{ display: 'flex', gap: 'var(--space-6)', marginTop: 'var(--space-2)' }}>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-muted-foreground)', fontSize: 'var(--text-xs)', transition: 'color var(--transition-fast)' }} onMouseEnter={(e) => e.target.style.color = 'var(--color-accent)'} onMouseLeave={(e) => e.target.style.color = 'var(--color-muted-foreground)'}>GitHub</a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-muted-foreground)', fontSize: 'var(--text-xs)', transition: 'color var(--transition-fast)' }} onMouseEnter={(e) => e.target.style.color = 'var(--color-accent)'} onMouseLeave={(e) => e.target.style.color = 'var(--color-muted-foreground)'}>LinkedIn</a>
-              <a href="mailto:erolindwayneee@gmail.com" style={{ color: 'var(--color-muted-foreground)', fontSize: 'var(--text-xs)', transition: 'color var(--transition-fast)' }} onMouseEnter={(e) => e.target.style.color = 'var(--color-accent)'} onMouseLeave={(e) => e.target.style.color = 'var(--color-muted-foreground)'}>Email</a>
-            </div>
-          </div>
-        </div>
+        <p className="mono">Designed in dots. Olongapo City, PH.</p>
       </footer>
-
-      <style jsx global>{`
-        @keyframes glyph-pulse {
-          0%, 100% { opacity: 0.5; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.2); }
-        }
-
-        @media (max-width: 768px) {
-          .nav-menu.desktop { display: none !important; }
-          .nav-burger { display: flex !important; }
-        }
-      `}</style>
     </>
   );
 }
