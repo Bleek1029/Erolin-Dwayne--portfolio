@@ -81,7 +81,8 @@ export default function LoadingOverlay({ isLoading, message = 'LOADING', showOnM
     const cappedTime = Math.min(timeSeconds, RUN + 0.6);
     const ph = cappedTime % CYCLE;
     const p = Math.min(1, ph / RUN);
-    const e = 1 - Math.pow(1 - p, 3);
+    // Faster easing: quadratic ease-out reaches 100% sooner
+    const e = 1 - Math.pow(1 - p, 2);
     const R = e * MAXR;
     const cell = S / N;
 
