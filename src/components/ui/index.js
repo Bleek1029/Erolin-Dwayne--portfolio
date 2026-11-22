@@ -3,6 +3,7 @@ export { default as Card, CardHeader, CardTitle, CardDescription, CardContent, C
 export { default as Input, Textarea, Label } from './Input';
 export { default as Tag } from './Tag';
 export { default as GlyphStrip } from './GlyphStrip';
+export { default as LoadingOverlay } from './LoadingOverlay';
 export { default as TypedLine } from './TypedLine';
 export { default as Count } from './Count';
 export { default as MatrixRain } from './MatrixRain';

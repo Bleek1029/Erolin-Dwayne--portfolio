@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigation } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { LoadingOverlay } from './ui';
 
 const nav = [
   { to: '/', label: 'Work' },
@@ -13,6 +14,7 @@ const CURRENT_YEAR = 2025;
 
 export default function Layout() {
   const { pathname } = useLocation();
+  const navigation = useNavigation();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [theme, setTheme] = useState(() => {
@@ -22,6 +24,8 @@ export default function Layout() {
     }
     return 'light';
   });
+
+  const isLoading = navigation.state === 'loading';
 
   // Scroll listener for nav background
   useEffect(() => {
@@ -46,6 +50,7 @@ export default function Layout() {
 
   return (
     <>
+      <LoadingOverlay isLoading={isLoading} message="NAVIGATING..." />
       {/* Navigation */}
       <header
         className={`nav ${scrolled ? 'scrolled' : ''}`}
