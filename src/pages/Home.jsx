@@ -17,15 +17,13 @@ export default function Home() {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      // Use toLocaleTimeString with timezone for accurate Manila time
-      const manilaTime = now.toLocaleTimeString('en-PH', {
-        timeZone: 'Asia/Manila',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-      });
-      setTime(manilaTime);
+      // Manila is UTC+8 - calculate manually for reliability
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      const manila = new Date(utc + 8 * 3600000);
+      const hours = String(manila.getHours()).padStart(2, '0');
+      const minutes = String(manila.getMinutes()).padStart(2, '0');
+      const seconds = String(manila.getSeconds()).padStart(2, '0');
+      setTime(`${hours}:${minutes}:${seconds}`);
     };
     updateTime();
     // Update every second for live clock feel
