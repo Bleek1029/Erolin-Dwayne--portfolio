@@ -22,13 +22,14 @@ export default function Home() {
         timeZone: 'Asia/Manila',
         hour: '2-digit',
         minute: '2-digit',
+        second: '2-digit',
         hour12: false,
       });
       setTime(manilaTime);
     };
     updateTime();
-    // Update every minute for accurate live clock
-    const interval = setInterval(updateTime, 60000);
+    // Update every second for live clock feel
+    const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
 
